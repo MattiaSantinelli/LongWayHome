@@ -43,7 +43,7 @@ public class WelcomeView {
 
         // --- Gestione Sfondo (Immagine con Fallback su Gradiente) ---
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/background.png")));
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
                     bgImage,
                     BackgroundRepeat.NO_REPEAT,

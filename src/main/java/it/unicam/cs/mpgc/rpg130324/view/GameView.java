@@ -3,15 +3,16 @@ package it.unicam.cs.mpgc.rpg130324.view;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+
+import java.util.Objects;
 
 public class GameView {
 
@@ -26,8 +27,8 @@ public class GameView {
     private int eroeRiga = 0;
     private int eroeColonna = 0;
 
-    // Rappresentazione grafica dell'eroe (un cerchio dorato)
-    private Circle pedinaEroe;
+    // Rappresentazione grafica dell'eroe (Sprite Image)
+    private ImageView pedinaEroe;
 
     public GameView(Stage stage) {
         this.stage = stage;
@@ -39,41 +40,68 @@ public class GameView {
 
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-background-color: #120300; -fx-padding: 20px;");
+
+        // --- AGGIUNTA SFONDO CON FALLBACK ---
+        try {
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
+            root.setBackground(new Background(new BackgroundImage(
+                    bgImage,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+            )));
+        } catch (Exception e) {
+            root.setStyle("-fx-background-color: #120300;");
+        }
+        root.setStyle(root.getStyle() + " -fx-padding: 20px;");
 
         // Info Giocatore
         Label infoLabel = new Label("Usa le Frecce Direzionali o WASD per muoverti");
         infoLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
         infoLabel.setTextFill(Color.web("#FFB74D"));
 
-        // Griglia della Scacchiera
+        // Griglia della Scacchiera (sfondo semi-trasparente per far passare la mappa)
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(3); // Spazio orizzontale tra le caselle
-        gridPane.setVgap(3); // Spazio verticale tra le caselle
-        gridPane.setStyle("-fx-background-color: #2B0B00; -fx-padding: 10px; -fx-border-color: #E65100; -fx-border-width: 2px;");
+        gridPane.setHgap(3);
+        gridPane.setVgap(3);
+        gridPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        gridPane.setStyle("-fx-background-color: rgba(43, 11, 0, 0.6); -fx-padding: 10px; -fx-border-color: #E65100; -fx-border-width: 2px; -fx-border-radius: 5px;");
 
-        // Generazione delle caselle
+        // Generazione delle caselle con opacità regolata
         for (int r = 0; r < RIGHE; r++) {
             for (int c = 0; c < COLONNE; c++) {
                 StackPane cella = new StackPane();
                 cella.setPrefSize(50, 50);
 
-                // Colore alternato per l'effetto scacchiera
+                // Colori scuri trasparenti (rgba) per far intravedere l'immagine sotto
                 if ((r + c) % 2 == 0) {
-                    cella.setStyle("-fx-background-color: #1E1E1E;");
+                    cella.setStyle("-fx-background-color: rgba(30, 30, 30, 0.45); -fx-border-color: rgba(230, 81, 0, 0.3);");
                 } else {
-                    cella.setStyle("-fx-background-color: #2A2A2A;");
+                    cella.setStyle("-fx-background-color: rgba(10, 10, 10, 0.55); -fx-border-color: rgba(230, 81, 0, 0.3);");
                 }
 
                 grigliaCelle[r][c] = cella;
-                gridPane.add(cella, c, r); // In GridPane: Colonna (X), Riga (Y)
+                gridPane.add(cella, c, r);
             }
         }
 
-        // Creazione dell'eroe (Cerchio Giallo con Glow Arancione)
-        pedinaEroe = new Circle(18, Color.web("#FFC107"));
-        pedinaEroe.setStyle("-fx-effect: dropshadow(three-pass-box, #FF5722, 10, 0.5, 0, 0);");
+        // --- CREAZIONE DELL'EROE CON IMMAGINE ---
+        try {
+            Image heroImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
+            pedinaEroe = new ImageView(heroImage);
+
+            // Adatta l'immagine alla dimensione della casella (50x50)
+            pedinaEroe.setFitWidth(40);
+            pedinaEroe.setFitHeight(40);
+            pedinaEroe.setPreserveRatio(true);
+
+            // Effetto bagliore arancione sotto la sprite dell'eroe
+            pedinaEroe.setStyle("-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0);");
+        } catch (Exception e) {
+            System.out.println("⚠️ Immagine 'hero.png' non trovata in resources!");
+        }
 
         // Posiziona l'eroe sulla casella iniziale (0,0)
         aggiornaPosizioneEroe();
@@ -89,9 +117,6 @@ public class GameView {
         stage.setResizable(false);
     }
 
-    /**
-     * Gestisce i comandi di movimento dell'eroe mantenendolo dentro i confini della griglia.
-     */
     private void gestisciPressioneTasto(KeyEvent event) {
         switch (event.getCode()) {
             case UP, W -> {
@@ -106,23 +131,20 @@ public class GameView {
             case RIGHT, D -> {
                 if (eroeColonna < COLONNE - 1) eroeColonna++;
             }
-            default -> { return; } // Ignora altri tasti
+            default -> { return; }
         }
 
         aggiornaPosizioneEroe();
     }
 
-    /**
-     * Sposta la pedina grafica dell'eroe nella nuova casella corrente.
-     */
     private void aggiornaPosizioneEroe() {
-        // Rimuove la pedina da qualsiasi casella si trovasse prima
+        if (pedinaEroe == null) return;
+
         for (int r = 0; r < RIGHE; r++) {
             for (int c = 0; c < COLONNE; c++) {
                 grigliaCelle[r][c].getChildren().remove(pedinaEroe);
             }
         }
-        // Inserisce la pedina nella nuova casella
         grigliaCelle[eroeRiga][eroeColonna].getChildren().add(pedinaEroe);
     }
 
