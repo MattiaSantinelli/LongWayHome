@@ -27,8 +27,14 @@ public class GameView {
     private int eroeRiga = 0;
     private int eroeColonna = 0;
 
-    // Rappresentazione grafica dell'eroe (Sprite Image)
+    // Variabili per rappresentazione grafica pupetti
     private ImageView pedinaEroe;
+    private Image imgGoblin;
+    private Image imgGigante;
+    private Image imgStrega;
+    private Image imgMago;
+    private Image imgDrago;
+    private Image imgCasa;
 
     public GameView(Stage stage) {
         this.stage = stage;
@@ -100,7 +106,7 @@ public class GameView {
             // Effetto bagliore arancione sotto la sprite dell'eroe
             pedinaEroe.setStyle("-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0);");
         } catch (Exception e) {
-            System.out.println("⚠️ Immagine 'hero.png' non trovata in resources!");
+            System.out.println("⚠️ Immagine 'imgEroe.png' non trovata in resources!");
         }
 
         // Posiziona l'eroe sulla casella iniziale (0,0)
@@ -115,6 +121,95 @@ public class GameView {
 
         stage.setScene(scene);
         stage.setResizable(false);
+
+        // --- CARICAMENTO SPRITE GOBLIN ---
+        try {
+            imgGoblin = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGoblin.png")));
+        } catch (Exception e) {
+            System.out.println("⚠️ Immagine 'imgGoblin.png' non trovata in resources!");
+        }
+
+        // --- POSIZIONAMENTO GOBLIN (Riga, Colonna) ---
+        posizionaGoblin(0, 5);
+        posizionaGoblin(1, 2);
+        posizionaGoblin(1, 8);
+        posizionaGoblin(2, 0 );
+        posizionaGoblin(2, 5);
+        posizionaGoblin(3, 1);
+        posizionaGoblin(3, 8);
+        posizionaGoblin(4, 6);
+        posizionaGoblin(5, 3);
+        posizionaGoblin(7, 5);
+
+        // --- CARICAMENTO SPRITE GIGANTE ---
+        try {
+            imgGigante = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGigante.png")));
+        } catch (Exception e) {
+            System.out.println("⚠️ Immagine 'imgGigante.png' non trovata in resources!");
+        }
+
+        // --- POSIZIONAMENTO GIGANTE (Riga, Colonna) ---
+        posizionaGigante(0, 3);
+        posizionaGigante(1, 6);
+        posizionaGigante(2, 2);
+        posizionaGigante(2, 4);
+        posizionaGigante(4, 0);
+        posizionaGigante(6, 1);
+        posizionaGigante(7, 0);
+        posizionaGigante(8, 2);
+        posizionaGigante(9, 6);
+
+        // --- CARICAMENTO SPRITE STREGA ---
+        try {
+            imgStrega = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgStrega.png")));
+        } catch (Exception e) {
+            System.out.println("⚠️ Immagine 'imgStrega.png' non trovata in resources!");
+        }
+
+        // --- POSIZIONAMENTO STREGA (Riga, Colonna) ---
+        posizionaStrega(2, 9);
+        posizionaStrega(3, 3);
+        posizionaStrega(5, 5);
+        posizionaStrega(7, 1);
+        posizionaStrega(7, 3);
+        posizionaStrega(7, 7);
+        posizionaStrega(8, 5);
+
+        // --- CARICAMENTO SPRITE MAGO ---
+        try {
+            imgMago = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgMago.png")));
+        } catch (Exception e) {
+            System.out.println("⚠️ Immagine 'imgMago.png' non trovata in resources!");
+        }
+
+        // --- POSIZIONAMENTO MAGO (Riga, Colonna) ---
+        posizionaMago( 5, 2);
+        posizionaMago( 5, 8);
+        posizionaMago( 6, 6);
+        posizionaMago( 9, 0);
+        posizionaMago( 9, 3);
+        posizionaMago( 8, 8);
+
+        // --- CARICAMENTO SPRITE DRAGO ---
+        try {
+            imgDrago = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgDrago.png")));
+        } catch (Exception e) {
+            System.out.println("⚠️ Immagine 'imgDrago.png' non trovata in resources!");
+        }
+
+        // --- POSIZIONAMENTO DRAGO (Riga, Colonna) ---
+        posizionaDrago( 8, 9);
+        posizionaDrago( 9, 8);
+
+        // --- CARICAMENTO SPRITE CASA ---
+        try {
+            imgCasa = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgCasa.png")));
+        } catch (Exception e) {
+            System.out.println("⚠️ Immagine 'imgCasa.png' non trovata in resources!");
+        }
+
+        // --- POSIZIONAMENTO CASA (Riga, Colonna) ---
+        posizionaCasa( 9, 9);
     }
 
     private void gestisciPressioneTasto(KeyEvent event) {
@@ -146,6 +241,87 @@ public class GameView {
             }
         }
         grigliaCelle[eroeRiga][eroeColonna].getChildren().add(pedinaEroe);
+    }
+
+    private void posizionaGoblin(int riga, int colonna) {
+        if (imgGoblin == null) return;
+
+        ImageView pedinaGoblin = new ImageView(imgGoblin);
+        pedinaGoblin.setFitWidth(40);
+        pedinaGoblin.setFitHeight(40);
+        pedinaGoblin.setPreserveRatio(true);
+
+        // Bagliore verde/giallo velenoso adatto ai goblin
+        pedinaGoblin.setStyle("-fx-effect: dropshadow(three-pass-box, #8BC34A, 10, 0.5, 0, 0);");
+
+        grigliaCelle[riga][colonna].getChildren().add(pedinaGoblin);
+    }
+
+    private void posizionaGigante(int riga, int colonna) {
+        if (imgGigante == null) return;
+
+        ImageView pedinaGigante = new ImageView(imgGigante);
+        pedinaGigante.setFitWidth(40);
+        pedinaGigante.setFitHeight(40);
+        pedinaGigante.setPreserveRatio(true);
+
+        // Bagliore giallo lucente adatto ai giganti
+        pedinaGigante.setStyle("-fx-effect: dropshadow(three-pass-box, #FFC107, 16, 0.7, 0, 0);");
+
+        grigliaCelle[riga][colonna].getChildren().add(pedinaGigante);
+    }
+
+    private void posizionaStrega(int riga, int colonna) {
+        if (imgStrega == null) return;
+
+        ImageView pedinaStrega = new ImageView(imgStrega);
+        pedinaStrega.setFitWidth(40);
+        pedinaStrega.setFitHeight(40);
+        pedinaStrega.setPreserveRatio(true);
+
+        // Bagliore viola chiaro adatto alle streghe
+        pedinaStrega.setStyle("-fx-effect: dropshadow(three-pass-box, #880E4F, 16, 0.7, 0, 0);");
+
+        grigliaCelle[riga][colonna].getChildren().add(pedinaStrega);
+    }
+
+    private void posizionaMago(int riga, int colonna) {
+        if (imgMago == null) return;
+
+        ImageView pedinaMago = new ImageView(imgMago);
+        pedinaMago.setFitWidth(40);
+        pedinaMago.setFitHeight(40);
+        pedinaMago.setPreserveRatio(true);
+
+        // Bagliore blu zaffiro adatto ai maghi
+        pedinaMago.setStyle("-fx-effect: dropshadow(three-pass-box, #1E88E5, 16, 0.7, 0, 0);");
+
+        grigliaCelle[riga][colonna].getChildren().add(pedinaMago);
+    }
+
+    private void posizionaDrago(int riga, int colonna) {
+        if (imgDrago == null) return;
+
+        ImageView pedinaDrago = new ImageView(imgDrago);
+        pedinaDrago.setFitWidth(40);
+        pedinaDrago.setFitHeight(40);
+        pedinaDrago.setPreserveRatio(true);
+
+        // Bagliore rosso velenoso adatto ai draghi
+        pedinaDrago.setStyle("-fx-effect: dropshadow(three-pass-box, #B71C1C, 16, 0.7, 0, 0);");
+
+        grigliaCelle[riga][colonna].getChildren().add(pedinaDrago);
+    }
+
+    private void posizionaCasa(int riga, int colonna) {
+        if (imgCasa == null) return;
+
+        ImageView pedinaCasa = new ImageView(imgCasa);
+        pedinaCasa.setFitWidth(40);
+        pedinaCasa.setFitHeight(40);
+        pedinaCasa.setPreserveRatio(true);
+
+        grigliaCelle[riga][colonna].getChildren().add(pedinaCasa);
     }
 
     public void mostra() {
