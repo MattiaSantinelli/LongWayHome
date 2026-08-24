@@ -19,6 +19,7 @@ public class GameView {
     private final Stage stage;
     private final int RIGHE = 10;
     private final int COLONNE = 10;
+    private final String nomeGiocatore;  //campo per memorizzare il nome
 
     // Matrice grafica delle celle
     private final StackPane[][] grigliaCelle = new StackPane[RIGHE][COLONNE];
@@ -36,8 +37,9 @@ public class GameView {
     private Image imgDrago;
     private Image imgCasa;
 
-    public GameView(Stage stage) {
+    public GameView(Stage stage, String nomeGiocatore) {
         this.stage = stage;
+        this.nomeGiocatore = nomeGiocatore;
         inizializzaInterfaccia();
     }
 
@@ -210,6 +212,10 @@ public class GameView {
 
         // --- POSIZIONAMENTO CASA (Riga, Colonna) ---
         posizionaCasa( 9, 9);
+
+        //Comandi test classe SchermataGoblinCombattimento
+        SchermataCombattimentoGoblin scontro = new SchermataCombattimentoGoblin(stage, pedinaEroe.getImage(), imgGoblin, nomeGiocatore);
+        scontro.mostra();
     }
 
     private void gestisciPressioneTasto(KeyEvent event) {

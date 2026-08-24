@@ -17,7 +17,7 @@ public class Launcher extends Application {
             System.out.println("Benvenuto " + nomeGiocatore + "! Avvio della partita...");
 
             // Crea e mostra la schermata con la scacchiera
-            GameView gameView = new GameView(primaryStage);
+            GameView gameView = new GameView(primaryStage, nomeGiocatore);
             gameView.mostra();
         });
 

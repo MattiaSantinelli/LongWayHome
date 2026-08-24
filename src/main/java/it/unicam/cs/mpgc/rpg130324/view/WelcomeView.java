@@ -154,4 +154,5 @@ public class WelcomeView {
     public void mostra() {
         stage.show();
     }
+
 }
