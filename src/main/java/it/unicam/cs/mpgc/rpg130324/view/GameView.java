@@ -214,7 +214,7 @@ public class GameView {
         posizionaCasa( 9, 9);
 
         //Comandi test classe SchermataMagoCombattimento
-        SchermataCombattimentoMago scontro = new SchermataCombattimentoMago(stage, pedinaEroe.getImage(), imgMago, nomeGiocatore);
+        SchermataCombattimentoDrago scontro = new SchermataCombattimentoDrago(stage, pedinaEroe.getImage(), imgDrago, nomeGiocatore);
         scontro.mostra();
     }
 

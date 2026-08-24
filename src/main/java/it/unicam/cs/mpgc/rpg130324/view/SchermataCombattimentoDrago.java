@@ -16,23 +16,23 @@ import javafx.stage.Stage;
 import java.util.Locale;
 import java.util.Objects;
 
-public class SchermataCombattimentoMago {
+public class SchermataCombattimentoDrago {
 
     private final Stage stage;
     private final Image imgEroe;
-    private final Image imgMago;
+    private final Image imgDrago;
     private final String nomeGiocatore; //campo per memorizzare il nome
 
-    public SchermataCombattimentoMago(Stage stage, Image imgEroe, Image imgMago, String nomeGiocatore) {
+    public SchermataCombattimentoDrago(Stage stage, Image imgEroe, Image imgDrago, String nomeGiocatore) {
         this.stage = stage;
         this.imgEroe = imgEroe;
-        this.imgMago = imgMago;
+        this.imgDrago = imgDrago;
         this.nomeGiocatore = nomeGiocatore;
         inizializzaInterfaccia();
     }
 
     private void inizializzaInterfaccia() {
-        stage.setTitle("LONG WAY HOME - Scontro con il Mago!");
+        stage.setTitle("LONG WAY HOME - Scontro con il Drago!");
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(15, 30, 15, 30));
@@ -59,7 +59,7 @@ public class SchermataCombattimentoMago {
         BorderPane.setAlignment(titoloLabel, Pos.CENTER);
         root.setTop(titoloLabel);
 
-        // --- CONTENITORE CENTRALE: EROE VS MAGO ---
+        // --- CONTENITORE CENTRALE: EROE VS DRAGO ---
         HBox scontroBox = new HBox(40);
         scontroBox.setAlignment(Pos.CENTER);
 
@@ -79,10 +79,10 @@ public class SchermataCombattimentoMago {
                         "-fx-padding: 8px 18px;"
         );
 
-        // Mago a Destra (Sprite ingrandita a 240px)
-        VBox magoBox = creaBoxCombattente(imgMago, "MAGO", "#1E88E5");
+        // Drago a Destra (Sprite ingrandita a 240px)
+        VBox dragoBox = creaBoxCombattente(imgDrago, "DRAGO", "#B71C1C");
 
-        scontroBox.getChildren().addAll(eroeBox, vsLabel, magoBox);
+        scontroBox.getChildren().addAll(eroeBox, vsLabel, dragoBox);
         root.setCenter(scontroBox);
 
         // --- SEZIONE BOTTONI AZIONE (RIALZATI) ---
