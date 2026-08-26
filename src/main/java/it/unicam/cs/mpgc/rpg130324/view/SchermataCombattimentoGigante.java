@@ -21,13 +21,13 @@ public class SchermataCombattimentoGigante {
     private final Stage stage;
     private final Image imgEroe;
     private final Image imgGigante;
-    private final String nomeGiocatore;
+    private final String nomeGiocatore; //campo per memorizzare il nome
 
     // HP per la vita dei personaggi
     private int hpEroe = 300;
     private final int maxHpEroe = 300;
-    private int hpGigante = 100;
-    private final int maxHpGigante = 100;
+    private int hpGigante = 130;
+    private final int maxHpGigante = 130;
 
     public SchermataCombattimentoGigante(Stage stage, Image imgEroe, Image imgGigante, String nomeGiocatore) {
         this.stage = stage;

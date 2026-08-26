@@ -21,7 +21,7 @@ public class SchermataCombattimentoGoblin {
     private final Stage stage;
     private final Image imgEroe;
     private final Image imgGoblin;
-    private final String nomeGiocatore;
+    private final String nomeGiocatore; //campo per memorizzare il nome
 
     // HP per la vita dei personaggi
     private int hpEroe = 300;
