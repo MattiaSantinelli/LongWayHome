@@ -60,7 +60,7 @@ public class SchermataCombattimentoGoblin {
         titoloLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 32));
         titoloLabel.setTextFill(Color.web("#FF5722"));
         titoloLabel.setStyle("-fx-effect: dropshadow(three-pass-box, #2B0B00, 10, 0.5, 0, 0);");
-
+        // Posizionamento titolo
         BorderPane.setMargin(titoloLabel, new Insets(20, 0, 0, 0));
         BorderPane.setAlignment(titoloLabel, Pos.CENTER);
         root.setTop(titoloLabel);
@@ -72,7 +72,7 @@ public class SchermataCombattimentoGoblin {
         // Box Eroe con Barra HP (Rosso/Arancio)
         VBox eroeBox = creaBoxCombattente(imgEroe, nomeGiocatore, "#FF5722", hpEroe, maxHpEroe, "#D32F2F");
 
-        // Scritta "VS" Stile Bottone
+        // Scritta "VS" Stile bottone
         Label vsLabel = new Label("VS");
         vsLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 42));
         vsLabel.setTextFill(Color.web("#FF5722"));
