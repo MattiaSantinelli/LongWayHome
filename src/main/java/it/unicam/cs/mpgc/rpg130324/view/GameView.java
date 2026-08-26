@@ -213,8 +213,8 @@ public class GameView {
         // --- POSIZIONAMENTO CASA (Riga, Colonna) ---
         posizionaCasa( 9, 9);
 
-        //Comandi test classe SchermataMagoCombattimento
-        SchermataCombattimentoDrago scontro = new SchermataCombattimentoDrago(stage, pedinaEroe.getImage(), imgDrago, nomeGiocatore);
+        //Comandi test classe SchermataCombattimentoGoblin
+        SchermataCombattimentoGoblin scontro = new SchermataCombattimentoGoblin(stage, pedinaEroe.getImage(), imgGoblin, nomeGiocatore);
         scontro.mostra();
     }
 
