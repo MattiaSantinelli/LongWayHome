@@ -21,7 +21,7 @@ public class SchermataCombattimentoStrega {
     private final Stage stage;
     private final Image imgEroe;
     private final Image imgStrega;
-    private final String nomeGiocatore;
+    private final String nomeGiocatore; //campo per memorizzare il nome
 
     // HP per la vita dei personaggi
     private int hpEroe = 300;
@@ -140,7 +140,6 @@ public class SchermataCombattimentoStrega {
         labelHpText.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
         labelHpText.setTextFill(Color.WHITE);
 
-        // Inserimento ordinato di tutti gli elementi nel VBox
         box.getChildren().addAll(sprite, labelNome, hpBar, labelHpText);
         return box;
     }
