@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -13,7 +14,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import java.util.Locale;
 import java.util.Objects;
 
 public class SchermataCombattimentoDrago {
@@ -22,6 +22,12 @@ public class SchermataCombattimentoDrago {
     private final Image imgEroe;
     private final Image imgDrago;
     private final String nomeGiocatore; //campo per memorizzare il nome
+
+    // HP per la vita dei personaggi
+    private int hpEroe = 300;
+    private final int maxHpEroe = 300;
+    private int hpDrago = 200;
+    private final int maxHpDrago = 200;
 
     public SchermataCombattimentoDrago(Stage stage, Image imgEroe, Image imgDrago, String nomeGiocatore) {
         this.stage = stage;
@@ -32,7 +38,7 @@ public class SchermataCombattimentoDrago {
     }
 
     private void inizializzaInterfaccia() {
-        stage.setTitle("LONG WAY HOME - Scontro con il Drago!");
+        stage.setTitle("LONG WAY HOME - Scontro Finale con il Drago!");
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(15, 30, 15, 30));
@@ -54,8 +60,8 @@ public class SchermataCombattimentoDrago {
         titoloLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 32));
         titoloLabel.setTextFill(Color.web("#FF5722"));
         titoloLabel.setStyle("-fx-effect: dropshadow(three-pass-box, #2B0B00, 10, 0.5, 0, 0);");
-        //posizionamento titolo
-        BorderPane.setMargin(titoloLabel, new Insets(25, 0, 0, 0));
+
+        BorderPane.setMargin(titoloLabel, new Insets(20, 0, 0, 0));
         BorderPane.setAlignment(titoloLabel, Pos.CENTER);
         root.setTop(titoloLabel);
 
@@ -63,10 +69,10 @@ public class SchermataCombattimentoDrago {
         HBox scontroBox = new HBox(40);
         scontroBox.setAlignment(Pos.CENTER);
 
-        // Eroe a Sinistra (Sprite ingrandita a 240px)
-        VBox eroeBox = creaBoxCombattente(imgEroe, nomeGiocatore, "#FF5722");
+        // Box Eroe con Barra HP (Rosso/Arancio)
+        VBox eroeBox = creaBoxCombattente(imgEroe, nomeGiocatore, "#FF5722", hpEroe, maxHpEroe, "#D32F2F");
 
-        // Scritta "VS" con Stile del Bottone Attivo
+        // Scritta "VS" Stile bottone
         Label vsLabel = new Label("VS");
         vsLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 42));
         vsLabel.setTextFill(Color.web("#FF5722"));
@@ -79,16 +85,22 @@ public class SchermataCombattimentoDrago {
                         "-fx-padding: 8px 18px;"
         );
 
-        // Drago a Destra (Sprite ingrandita a 240px)
-        VBox dragoBox = creaBoxCombattente(imgDrago, "DRAGO", "#B71C1C");
+        // Box Drago con barra HP (rosso intenso)
+        VBox dragoBox = creaBoxCombattente(imgDrago, "DRAGO", "#B71C1C", hpDrago, maxHpDrago, "#D84315");
+
+        // Questo if serve per portare sullo stesso livello il nome "DRAGO" e la barra HP
+        // del drago poichè ha grandezze diverse da tutte le altre immagini utilizzate
+        if (!dragoBox.getChildren().isEmpty()) {
+            VBox.setMargin(dragoBox.getChildren().get(0), new Insets(70, 0, 0, 0));
+        }
 
         scontroBox.getChildren().addAll(eroeBox, vsLabel, dragoBox);
         root.setCenter(scontroBox);
 
-        // --- SEZIONE BOTTONI AZIONE (RIALZATI) ---
+        // --- SEZIONE BOTTONI AZIONE ---
         HBox bottoniBox = new HBox(30);
         bottoniBox.setAlignment(Pos.CENTER);
-        BorderPane.setMargin(bottoniBox, new Insets(0, 0, 70, 0)); // Solleva i bottoni
+        BorderPane.setMargin(bottoniBox, new Insets(0, 0, 70, 0));
 
         Button btnAttacca = creaBottone("ATTACCA", "#D32F2F", "#FF5722");
         Button btnDifendi = creaBottone("DIFENDI", "#FF9800", "#FFC107");
@@ -100,21 +112,41 @@ public class SchermataCombattimentoDrago {
         stage.setScene(scene);
     }
 
-    private VBox creaBoxCombattente(Image img, String nome, String coloreGlow) {
-        VBox box = new VBox(10);
+    private VBox creaBoxCombattente(Image img, String nome, String coloreGlow, int hpAttuali, int hpMax, String coloreBarra) {
+        VBox box = new VBox(8);
         box.setAlignment(Pos.CENTER);
 
+        // Sprite
         ImageView sprite = new ImageView(img);
-        sprite.setFitWidth(240);
-        sprite.setFitHeight(240);
+        sprite.setFitWidth(220);
+        sprite.setFitHeight(220);
         sprite.setPreserveRatio(true);
         sprite.setStyle("-fx-effect: dropshadow(three-pass-box, " + coloreGlow + ", 22, 0.7, 0, 0);");
 
+        // Nome
         Label labelNome = new Label(nome);
         labelNome.setFont(Font.font("Georgia", FontWeight.BOLD, 20));
         labelNome.setTextFill(Color.web(coloreGlow));
 
-        box.getChildren().addAll(sprite, labelNome);
+        // Barra HP
+        ProgressBar hpBar = new ProgressBar((double) hpAttuali / hpMax);
+        hpBar.setPrefWidth(180);
+        hpBar.setPrefHeight(16);
+        hpBar.setStyle(
+                "-fx-accent: " + coloreBarra + "; " +
+                        "-fx-control-inner-background: rgba(20, 5, 0, 0.8); " +
+                        "-fx-border-color: " + coloreGlow + "; " +
+                        "-fx-border-width: 1.5px; " +
+                        "-fx-border-radius: 5px; " +
+                        "-fx-background-radius: 5px;"
+        );
+
+        // Testo HP
+        Label labelHpText = new Label(hpAttuali + " / " + hpMax + " HP");
+        labelHpText.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
+        labelHpText.setTextFill(Color.WHITE);
+
+        box.getChildren().addAll(sprite, labelNome, hpBar, labelHpText);
         return box;
     }
 
