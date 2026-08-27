@@ -214,8 +214,8 @@ public class GameView {
         posizionaCasa( 9, 9);
 
         //Comandi test classe SchermataCombattimentoGoblin
-        SchermataCombattimentoDrago scontro = new SchermataCombattimentoDrago(stage, pedinaEroe.getImage(), imgDrago, nomeGiocatore);
-        scontro.mostra();
+        //SchermataCombattimentoDrago scontro = new SchermataCombattimentoDrago(stage, pedinaEroe.getImage(), imgDrago, nomeGiocatore);
+        //scontro.mostra();
     }
 
     private void gestisciPressioneTasto(KeyEvent event) {

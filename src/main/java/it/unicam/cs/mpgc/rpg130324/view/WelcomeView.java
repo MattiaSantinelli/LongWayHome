@@ -141,9 +141,9 @@ public class WelcomeView {
             String nome = campoNome.getText().trim();
             if (nome.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Attenzione");
+                alert.setTitle("ATTENZIONE!");
                 alert.setHeaderText(null);
-                alert.setContentText("Per favore, inserisci un nome valido!");
+                alert.setContentText("Nome inserito non valido, il nome del giocatore non può essere vuoto. Perfavore riprova!");
                 alert.showAndWait();
             } else {
                 callback.accept(nome);
