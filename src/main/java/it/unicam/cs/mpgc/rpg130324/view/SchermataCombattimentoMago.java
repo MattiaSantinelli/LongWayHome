@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg130324.view;
 
+import it.unicam.cs.mpgc.rpg130324.model.Eroe;
+import it.unicam.cs.mpgc.rpg130324.model.Nemico;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,19 +23,27 @@ public class SchermataCombattimentoMago {
     private final Stage stage;
     private final Image imgEroe;
     private final Image imgMago;
-    private final String nomeGiocatore; //campo per memorizzare il nome
 
-    // HP per la vita dei personaggi
-    private int hpEroe = 300;
-    private final int maxHpEroe = 300;
-    private int hpMago = 100;
-    private final int maxHpMago = 100;
+    // Riferimenti ai modelli di gioco
+    private final Eroe eroe;
+    private final Nemico mago;
 
-    public SchermataCombattimentoMago(Stage stage, Image imgEroe, Image imgMago, String nomeGiocatore) {
+    // Riferimenti alle Barre HP e Label salvati come campi di classe
+    private ProgressBar hpBarEroe;
+    private Label labelHpTextEroe;
+    private ProgressBar hpBarMago;
+    private Label labelHpTextMago;
+
+    // Bottoni per il Controller
+    private Button btnAttacca;
+    private Button btnDifendi;
+
+    public SchermataCombattimentoMago(Stage stage, Image imgEroe, Image imgMago, Eroe eroe, Nemico mago) {
         this.stage = stage;
         this.imgEroe = imgEroe;
         this.imgMago = imgMago;
-        this.nomeGiocatore = nomeGiocatore;
+        this.eroe = eroe;
+        this.mago = mago;
         inizializzaInterfaccia();
     }
 
@@ -70,7 +80,7 @@ public class SchermataCombattimentoMago {
         scontroBox.setAlignment(Pos.CENTER);
 
         // Box Eroe con Barra HP (Rosso/Arancio)
-        VBox eroeBox = creaBoxCombattente(imgEroe, nomeGiocatore, "#FF5722", hpEroe, maxHpEroe, "#D32F2F");
+        VBox eroeBox = creaBoxEroe();
 
         // Scritta "VS" Stile bottone
         Label vsLabel = new Label("VS");
@@ -86,7 +96,7 @@ public class SchermataCombattimentoMago {
         );
 
         // Box Mago con barra HP (bluastro)
-        VBox magoBox = creaBoxCombattente(imgMago, "MAGO", "#1E88E5", hpMago, maxHpMago, "#0277BD");
+        VBox magoBox = creaBoxMago();
 
         scontroBox.getChildren().addAll(eroeBox, vsLabel, magoBox);
         root.setCenter(scontroBox);
@@ -96,8 +106,8 @@ public class SchermataCombattimentoMago {
         bottoniBox.setAlignment(Pos.CENTER);
         BorderPane.setMargin(bottoniBox, new Insets(0, 0, 70, 0));
 
-        Button btnAttacca = creaBottone("ATTACCA", "#D32F2F", "#FF5722");
-        Button btnDifendi = creaBottone("DIFENDI", "#FF9800", "#FFC107");
+        btnAttacca = creaBottone("ATTACCA", "#D32F2F", "#FF5722");
+        btnDifendi = creaBottone("DIFENDI", "#FF9800", "#FFC107");
 
         bottoniBox.getChildren().addAll(btnAttacca, btnDifendi);
         root.setBottom(bottoniBox);
@@ -106,41 +116,71 @@ public class SchermataCombattimentoMago {
         stage.setScene(scene);
     }
 
-    private VBox creaBoxCombattente(Image img, String nome, String coloreGlow, int hpAttuali, int hpMax, String coloreBarra) {
+    private VBox creaBoxEroe() {
         VBox box = new VBox(8);
         box.setAlignment(Pos.CENTER);
 
-        // Sprite
-        ImageView sprite = new ImageView(img);
+        ImageView sprite = new ImageView(imgEroe);
         sprite.setFitWidth(220);
         sprite.setFitHeight(220);
         sprite.setPreserveRatio(true);
-        sprite.setStyle("-fx-effect: dropshadow(three-pass-box, " + coloreGlow + ", 22, 0.7, 0, 0);");
+        sprite.setStyle("-fx-effect: dropshadow(three-pass-box, #FF5722, 22, 0.7, 0, 0);");
 
-        // Nome
-        Label labelNome = new Label(nome);
+        Label labelNome = new Label(eroe.getNome());
         labelNome.setFont(Font.font("Georgia", FontWeight.BOLD, 20));
-        labelNome.setTextFill(Color.web(coloreGlow));
+        labelNome.setTextFill(Color.web("#FF5722"));
 
-        // Barra HP
-        ProgressBar hpBar = new ProgressBar((double) hpAttuali / hpMax);
-        hpBar.setPrefWidth(180);
-        hpBar.setPrefHeight(16);
-        hpBar.setStyle(
-                "-fx-accent: " + coloreBarra + "; " +
+        hpBarEroe = new ProgressBar((double) eroe.getHpAttuali() / eroe.getHpMassimi());
+        hpBarEroe.setPrefWidth(180);
+        hpBarEroe.setPrefHeight(16);
+        hpBarEroe.setStyle(
+                "-fx-accent: #D32F2F; " +
                         "-fx-control-inner-background: rgba(20, 5, 0, 0.8); " +
-                        "-fx-border-color: " + coloreGlow + "; " +
+                        "-fx-border-color: #FF5722; " +
                         "-fx-border-width: 1.5px; " +
                         "-fx-border-radius: 5px; " +
                         "-fx-background-radius: 5px;"
         );
 
-        // Testo HP
-        Label labelHpText = new Label(hpAttuali + " / " + hpMax + " HP");
-        labelHpText.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
-        labelHpText.setTextFill(Color.WHITE);
+        labelHpTextEroe = new Label(eroe.getHpAttuali() + " / " + eroe.getHpMassimi() + " HP");
+        labelHpTextEroe.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
+        labelHpTextEroe.setTextFill(Color.WHITE);
 
-        box.getChildren().addAll(sprite, labelNome, hpBar, labelHpText);
+        box.getChildren().addAll(sprite, labelNome, hpBarEroe, labelHpTextEroe);
+        return box;
+    }
+
+    private VBox creaBoxMago() {
+        VBox box = new VBox(8);
+        box.setAlignment(Pos.CENTER);
+
+        ImageView sprite = new ImageView(imgMago);
+        sprite.setFitWidth(220);
+        sprite.setFitHeight(220);
+        sprite.setPreserveRatio(true);
+        sprite.setStyle("-fx-effect: dropshadow(three-pass-box, #1E88E5, 22, 0.7, 0, 0);");
+
+        Label labelNome = new Label(mago.getNome());
+        labelNome.setFont(Font.font("Georgia", FontWeight.BOLD, 20));
+        labelNome.setTextFill(Color.web("#1E88E5"));
+
+        hpBarMago = new ProgressBar((double) mago.getHpAttuali() / mago.getHpMassimi());
+        hpBarMago.setPrefWidth(180);
+        hpBarMago.setPrefHeight(16);
+        hpBarMago.setStyle(
+                "-fx-accent: #0277BD; " +
+                        "-fx-control-inner-background: rgba(20, 5, 0, 0.8); " +
+                        "-fx-border-color: #1E88E5; " +
+                        "-fx-border-width: 1.5px; " +
+                        "-fx-border-radius: 5px; " +
+                        "-fx-background-radius: 5px;"
+        );
+
+        labelHpTextMago = new Label(mago.getHpAttuali() + " / " + mago.getHpMassimi() + " HP");
+        labelHpTextMago.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
+        labelHpTextMago.setTextFill(Color.WHITE);
+
+        box.getChildren().addAll(sprite, labelNome, hpBarMago, labelHpTextMago);
         return box;
     }
 
@@ -164,6 +204,24 @@ public class SchermataCombattimentoMago {
         btn.setOnMouseExited(e -> btn.setStyle(stileBase));
 
         return btn;
+    }
+
+    // --- METODO DI AGGIORNAMENTO GRAFICO ---
+    public void aggiornaGrafica() {
+        hpBarEroe.setProgress((double) eroe.getHpAttuali() / eroe.getHpMassimi());
+        labelHpTextEroe.setText(eroe.getHpAttuali() + " / " + eroe.getHpMassimi() + " HP");
+
+        hpBarMago.setProgress((double) mago.getHpAttuali() / mago.getHpMassimi());
+        labelHpTextMago.setText(mago.getHpAttuali() + " / " + mago.getHpMassimi() + " HP");
+    }
+
+    // --- METODI PER IL CONTROLLER ---
+    public void setOnAttaccaListener(Runnable azione) {
+        this.btnAttacca.setOnAction(e -> azione.run());
+    }
+
+    public void setOnDifendiListener(Runnable azione) {
+        btnDifendi.setOnAction(e -> azione.run());
     }
 
     public void mostra() {
