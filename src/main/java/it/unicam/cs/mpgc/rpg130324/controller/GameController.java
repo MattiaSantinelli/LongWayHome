@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class GameController {
 
@@ -397,61 +400,47 @@ public class GameController {
      * iniziali dei personaggi e della casa di arrivo.
      */
     private void inizializzaMappaGioco() {
+        // Pulizia preliminare della matrice
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 10; c++) {
                 mappaGioco[r][c] = "";
             }
         }
 
-        // Posizione iniziale dell'Eroe
+        // Posizioni fisse prescritte
         mappaGioco[0][0] = "Eroe";
-
-        // GOBLIN
-        mappaGioco[0][5] = "Goblin";
-        mappaGioco[1][2] = "Goblin";
-        mappaGioco[1][8] = "Goblin";
-        mappaGioco[2][0] = "Goblin";
-        mappaGioco[2][5] = "Goblin";
-        mappaGioco[3][1] = "Goblin";
-        mappaGioco[3][8] = "Goblin";
-        mappaGioco[4][6] = "Goblin";
-        mappaGioco[5][3] = "Goblin";
-        mappaGioco[7][5] = "Goblin";
-
-        // GIGANTE
-        mappaGioco[0][3] = "Gigante";
-        mappaGioco[1][6] = "Gigante";
-        mappaGioco[2][2] = "Gigante";
-        mappaGioco[2][4] = "Gigante";
-        mappaGioco[4][0] = "Gigante";
-        mappaGioco[6][1] = "Gigante";
-        mappaGioco[7][0] = "Gigante";
-        mappaGioco[8][2] = "Gigante";
-        mappaGioco[9][6] = "Gigante";
-
-        // STREGA
-        mappaGioco[2][9] = "Strega";
-        mappaGioco[3][3] = "Strega";
-        mappaGioco[5][5] = "Strega";
-        mappaGioco[7][1] = "Strega";
-        mappaGioco[7][3] = "Strega";
-        mappaGioco[7][7] = "Strega";
-        mappaGioco[8][5] = "Strega";
-
-        // MAGO
-        mappaGioco[5][2] = "Mago";
-        mappaGioco[5][8] = "Mago";
-        mappaGioco[6][6] = "Mago";
+        mappaGioco[9][9] = "Casa";
         mappaGioco[8][8] = "Mago";
-        mappaGioco[9][0] = "Mago";
-        mappaGioco[9][3] = "Mago";
-
-        // DRAGO
         mappaGioco[8][9] = "Drago";
         mappaGioco[9][8] = "Drago";
 
-        // CASA
-        mappaGioco[9][9] = "Casa";
+        // Preparazione del pool totale contenente sia i 32 nemici che le 64 celle vuote
+        java.util.List<String> poolElementi = new java.util.ArrayList<>();
+
+        for (int i = 0; i < 12; i++) poolElementi.add("Goblin");
+        for (int i = 0; i < 12; i++) poolElementi.add("Gigante");
+        for (int i = 0; i < 10; i++) poolElementi.add("Strega");
+        for (int i = 0; i < 9; i++) poolElementi.add("Mago");
+
+        // Aggiunta delle 64 celle vuote
+        for (int i = 0; i < 64; i++) {
+            poolElementi.add("");
+        }
+
+        // Mescolamento casuale dell'intero pool di 96 elementi
+        java.util.Collections.shuffle(poolElementi);
+
+        // Assegnazione degli elementi rimescolati alle celle disponibili
+        int indexPool = 0;
+        for (int r = 0; r < 10; r++) {
+            for (int c = 0; c < 10; c++) {
+                // Se la cella non è occupata dai ruoli fissi
+                if (mappaGioco[r][c].isEmpty()) {
+                    mappaGioco[r][c] = poolElementi.get(indexPool);
+                    indexPool++;
+                }
+            }
+        }
     }
 
     public String getNomeGiocatore() {
