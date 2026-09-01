@@ -26,6 +26,10 @@ public class GameController {
     private int eroeColonna = 0;
     private final String[][] mappaGioco = new String[10][10];
 
+    // Variabili per statistiche della partita
+    private long tempoPartita;
+    private int nemiciSconfitti = 0;
+
     public GameController(Stage stage) {
         this.stage = stage;
         inizializzaMappaGioco();
@@ -40,10 +44,61 @@ public class GameController {
         welcomeView.setOnIniziaListener(nome -> {
             this.nomeGiocatore = nome;
             this.eroe = new Eroe(nomeGiocatore);
+            this.tempoPartita = System.currentTimeMillis(); // Avvia il cronometro
             mostraMappaDiGioco();
         });
 
         welcomeView.mostra();
+    }
+
+    /**
+     * Calcola i secondi trascorsi dall'inizio della partita.
+     */
+    private long getTempoTrascorsoSecondi() {
+        return (System.currentTimeMillis() - tempoPartita) / 1000;
+    }
+
+    /**
+    * Ferma i timer attivi e mostra la schermata di EndView.
+    */
+    private void gestisciGameOver() {
+        if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
+        EndView endView = new EndView(stage, nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
+        endView.setOnGiocaAncoraListener(() ->{
+            // Riavvio della partita
+            this.riavviaPartita();
+        });
+        endView.setOnFineListener(() -> {
+            // Chiudo il gioco
+            stage.close();
+        });
+        endView.mostra();
+    }
+
+    /**
+     * Ferma i timer attivi e mostra la schermata di WinView.
+     */
+    private void gestisciVittoria() {
+        if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
+        WinView winView = new WinView(stage, nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
+        winView.setOnGiocaAncoraListener(() ->{
+            // Riavvio della partita
+            this.riavviaPartita();
+        });
+        winView.setOnFineListener(() -> {
+            // Chiudo il gioco
+            stage.close();
+        });
+        winView.mostra();
+    }
+
+    private void riavviaPartita() {
+        this.nemiciSconfitti = 0;
+        this.eroeRiga = 0;
+        this.eroeColonna = 0;
+
+        inizializzaMappaGioco(); // Ripristina la mappa
+        avviaGioco();            // Torna all'inizio
     }
 
     /**
@@ -98,7 +153,7 @@ public class GameController {
                 case "Strega" -> avviaCombattimentoStrega();
                 case "Mago" -> avviaCombattimentoMago();
                 case "Drago" -> avviaCombattimentoDrago();
-                case "Casa" -> System.out.println("HAI RAGGIUNTO LA TUA CASA!");
+                case "Casa" -> gestisciVittoria();
             }
         }
     }
@@ -123,6 +178,7 @@ public class GameController {
 
             if (goblin.getHpAttuali() <= 0) {
                 if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
+                nemiciSconfitti++;
                 // Alla vittoria il nemico è sparito e l'eroe occupa la casella
                 mostraMappaDiGioco();
             }
@@ -139,7 +195,10 @@ public class GameController {
                 } else {
                     eroe.subisciDanno(goblin.getForzaAttacco());
                     vistaGoblin.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) timerAttaccoNemico.stop();
+                    if (eroe.getHpAttuali() <= 0) {
+                        timerAttaccoNemico.stop();
+                        gestisciGameOver();
+                    }
                 }
             }
         }));
@@ -166,6 +225,7 @@ public class GameController {
 
             if (gigante.getHpAttuali() <= 0) {
                 if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
+                nemiciSconfitti++;
                 mostraMappaDiGioco();
             }
         });
@@ -181,7 +241,10 @@ public class GameController {
                 } else {
                     eroe.subisciDanno(gigante.getForzaAttacco());
                     vistaGigante.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) timerAttaccoNemico.stop();
+                    if (eroe.getHpAttuali() <= 0) {
+                        timerAttaccoNemico.stop();
+                        gestisciGameOver();
+                    }
                 }
             }
         }));
@@ -208,6 +271,7 @@ public class GameController {
 
             if (strega.getHpAttuali() <= 0) {
                 if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
+                nemiciSconfitti++;
                 mostraMappaDiGioco();
             }
         });
@@ -223,7 +287,10 @@ public class GameController {
                 } else {
                     eroe.subisciDanno(strega.getForzaAttacco());
                     vistaStrega.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) timerAttaccoNemico.stop();
+                    if (eroe.getHpAttuali() <= 0) {
+                        timerAttaccoNemico.stop();
+                        gestisciGameOver();
+                    }
                 }
             }
         }));
@@ -250,6 +317,7 @@ public class GameController {
 
             if (mago.getHpAttuali() <= 0) {
                 if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
+                nemiciSconfitti++;
                 mostraMappaDiGioco();
             }
         });
@@ -265,7 +333,10 @@ public class GameController {
                 } else {
                     eroe.subisciDanno(mago.getForzaAttacco());
                     vistaMago.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) timerAttaccoNemico.stop();
+                    if (eroe.getHpAttuali() <= 0) {
+                        timerAttaccoNemico.stop();
+                        gestisciGameOver();
+                    }
                 }
             }
         }));
@@ -292,6 +363,7 @@ public class GameController {
 
             if (drago.getHpAttuali() <= 0) {
                 if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
+                nemiciSconfitti++;
                 mostraMappaDiGioco();
             }
         });
@@ -307,7 +379,10 @@ public class GameController {
                 } else {
                     eroe.subisciDanno(drago.getForzaAttacco());
                     vistaDrago.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) timerAttaccoNemico.stop();
+                    if (eroe.getHpAttuali() <= 0) {
+                        timerAttaccoNemico.stop();
+                        gestisciGameOver();
+                    }
                 }
             }
         }));

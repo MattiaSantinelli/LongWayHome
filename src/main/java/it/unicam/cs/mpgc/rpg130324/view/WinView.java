@@ -14,9 +14,9 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 /**
- * Schermata mostrata quando l'Eroe viene sconfitto in combattimento.
+ * Schermata mostrata quando l'Eroe raggiunge con successo la Casa.
  */
-public class EndView {
+public class WinView {
 
     private final Stage stage;
     private final String nomeGiocatore;
@@ -27,7 +27,7 @@ public class EndView {
     private Button btnGiocaAncora;
     private Button btnFine;
 
-    public EndView(Stage stage, String nomeGiocatore, long tempoImpiegatoSecondi, int nemiciSconfitti) {
+    public WinView(Stage stage, String nomeGiocatore, long tempoImpiegatoSecondi, int nemiciSconfitti) {
         this.stage = stage;
         this.nomeGiocatore = nomeGiocatore;
         this.tempoImpiegatoSecondi = tempoImpiegatoSecondi;
@@ -36,15 +36,15 @@ public class EndView {
     }
 
     private void inizializzaInterfaccia() {
-        stage.setTitle("LONG WAY HOME - Game Over");
+        stage.setTitle("LONG WAY HOME - Vittoria!");
 
-        VBox root = new VBox(25);
-        root.setAlignment(Pos.CENTER);
+        // Contenitore di sfondo (posizionato a sinistra come nel banner dell'immagine)
+        StackPane rootPane = new StackPane();
+        rootPane.setAlignment(Pos.CENTER_LEFT);
 
-        // Sfondo solito con fallback di colore
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
-            root.setBackground(new Background(new BackgroundImage(
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WinView_background.png")));
+            rootPane.setBackground(new Background(new BackgroundImage(
                     bgImage,
                     BackgroundRepeat.NO_REPEAT,
                     BackgroundRepeat.NO_REPEAT,
@@ -52,46 +52,75 @@ public class EndView {
                     new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
             )));
         } catch (Exception e) {
-            root.setStyle("-fx-background-color: #120300;");
+            rootPane.setStyle("-fx-background-color: #120300;");
         }
-        root.setStyle(root.getStyle() + " -fx-padding: 30px;");
 
-        // Titolo GAME OVER
-        Label titleLabel = new Label("GAME OVER");
-        titleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 48));
-        titleLabel.setTextFill(Color.web("#D32F2F")); // Rosso scuro
-        titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+        // BANNER PRINCIPALE (Riquadro Scuro con bordo dorato)
+        VBox bannerBox = new VBox(20);
+        bannerBox.setAlignment(Pos.CENTER);
+        bannerBox.setMaxWidth(320);
+        bannerBox.setMaxHeight(250);
+        bannerBox.setStyle(
+                "-fx-background-color: rgba(20, 18, 15, 0.92); " +
+                        "-fx-border-color: #B8860B; " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 10px; " +
+                        "-fx-background-radius: 10px; " +
+                        "-fx-padding: 30px; " +
+                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 15, 0, 0, 0);"
+        );
 
-        // Nome Giocatore
-        Label playerLabel = new Label("Sei stato sconfitto, " + nomeGiocatore + "!");
-        playerLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
-        playerLabel.setTextFill(Color.web("#FFB74D"));
+        // Titolo VITTORIA!
+        Label titleLabel = new Label("VITTORIA!");
+        titleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 38));
+        titleLabel.setTextFill(Color.web("#FFD700")); // Oro
+        titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 8, 0, 0, 0);");
 
-        // Riquadro con le statistiche
-        VBox statsBox = new VBox(10);
-        statsBox.setAlignment(Pos.CENTER);
-        statsBox.setMaxWidth(400);
-        statsBox.setStyle("-fx-background-color: rgba(20, 5, 5, 0.85); -fx-padding: 20px; -fx-border-color: #B71C1C; -fx-border-width: 2px; -fx-border-radius: 8px; -fx-background-radius: 8px;");
+        // Messaggio di congratulazioni
+        Label subtitleLabel = new Label("Congratulazioni " + nomeGiocatore + "!");
+        subtitleLabel.setFont(Font.font("Georgia", 14));
+        subtitleLabel.setTextFill(Color.web("#E0E0E0"));
 
+        // TABELLA STATISTICHE (GridPane)
+        GridPane statsGrid = new GridPane();
+        statsGrid.setHgap(40);
+        statsGrid.setVgap(15);
+        statsGrid.setAlignment(Pos.CENTER);
+        statsGrid.setStyle("-fx-padding: 15px 0px;");
+
+        // Formattazione tempo MM:SS
         long minuti = tempoImpiegatoSecondi / 60;
         long secondi = tempoImpiegatoSecondi % 60;
         String tempoFormattato = String.format("%02d:%02d", minuti, secondi);
 
-        Label tempoLabel = new Label("Tempo di gioco: " + tempoFormattato);
-        tempoLabel.setFont(Font.font("Georgia", 18));
-        tempoLabel.setTextFill(Color.WHITE);
+        // Riga 1: Tempo impiegato
+        Label lblTempoTitle = new Label("Tempo impiegato");
+        lblTempoTitle.setFont(Font.font("Georgia", 16));
+        lblTempoTitle.setTextFill(Color.web("#CCCCCC"));
 
-        Label nemiciLabel = new Label("Nemici sconfitti: " + nemiciSconfitti);
-        nemiciLabel.setFont(Font.font("Georgia", 18));
-        nemiciLabel.setTextFill(Color.WHITE);
+        Label lblTempoVal = new Label(tempoFormattato);
+        lblTempoVal.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+        lblTempoVal.setTextFill(Color.WHITE);
 
-        statsBox.getChildren().addAll(tempoLabel, nemiciLabel);
+        // Riga 2: Nemici sconfitti
+        Label lblNemiciTitle = new Label("Nemici sconfitti");
+        lblNemiciTitle.setFont(Font.font("Georgia", 16));
+        lblNemiciTitle.setTextFill(Color.web("#CCCCCC"));
 
-        // Bottoni
+        Label lblNemiciVal = new Label(String.valueOf(nemiciSconfitti));
+        lblNemiciVal.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+        lblNemiciVal.setTextFill(Color.WHITE);
+
+        // Aggiunta alla griglia (Colonna, Riga)
+        statsGrid.add(lblTempoTitle, 0, 0);
+        statsGrid.add(lblTempoVal, 1, 0);
+        statsGrid.add(lblNemiciTitle, 0, 1);
+        statsGrid.add(lblNemiciVal, 1, 1);
+
         // PULSANTI
         btnGiocaAncora = new Button("GIOCA ANCORA");
         btnGiocaAncora.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
-        btnGiocaAncora.setPrefWidth(190);
+        btnGiocaAncora.setPrefWidth(220);
 
         // Stili CSS base (Stato normale e hover)
         String styleVerdeNormale = "-fx-background-color: #1b5e20; -fx-text-fill: white; -fx-border-color: #4caf50; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
@@ -103,7 +132,7 @@ public class EndView {
 
         btnFine = new Button("FINE");
         btnFine.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
-        btnFine.setPrefWidth(190);
+        btnFine.setPrefWidth(220);
 
         // Stili CSS base (Stato normale e hover)
         String styleRossoNormale = "-fx-background-color: #b71c1c; -fx-text-fill: white; -fx-border-color: #f44336; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
@@ -113,13 +142,18 @@ public class EndView {
         btnFine.setOnMouseEntered(e -> btnFine.setStyle(styleRossoHover));
         btnFine.setOnMouseExited(e -> btnFine.setStyle(styleRossoNormale));
 
-        HBox buttonBox = new HBox(20);
+        VBox buttonBox = new VBox(12);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.getChildren().addAll(btnGiocaAncora, btnFine);
 
-        root.getChildren().addAll(titleLabel, playerLabel, statsBox, buttonBox);
+        // Inserimento elementi nel banner
+        bannerBox.getChildren().addAll(titleLabel, subtitleLabel, statsGrid, buttonBox);
 
-        Scene scene = new Scene(root, 800, 650);
+        // Posizionamento del banner nell'interfaccia con del margine dal bordo sinistro
+        StackPane.setMargin(bannerBox, new javafx.geometry.Insets(0, 0, 0, 60));
+        rootPane.getChildren().add(bannerBox);
+
+        Scene scene = new Scene(rootPane, 900, 650);
         stage.setScene(scene);
     }
 
