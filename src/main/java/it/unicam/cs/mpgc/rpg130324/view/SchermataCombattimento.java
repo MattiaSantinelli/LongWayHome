@@ -18,39 +18,40 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
-public class SchermataCombattimentoGoblin {
+public class SchermataCombattimento {
 
     private final Stage stage;
     private final Image imgEroe;
-    private final Image imgGoblin;
+    private final Image imgNemico;
 
     // Riferimenti ai modelli di gioco
     private final Eroe eroe;
-    private final Nemico goblin;
+    private final Nemico nemico;
 
-    // Riferimenti alle Barre HP e Label salvati come campi di classe
+    // Riferimenti alle Barre HP e Label
     private ProgressBar hpBarEroe;
     private Label labelHpTextEroe;
-    private ProgressBar hpBarGoblin;
-    private Label labelHpTextGoblin;
+    private ProgressBar hpBarNemico;
+    private Label labelHpTextNemico;
 
     // Bottoni per il Controller
     private Button btnAttacca;
     private Button btnDifendi;
 
-    public SchermataCombattimentoGoblin(Stage stage, Image imgEroe, Image imgGoblin, Eroe eroe, Nemico goblin) {
-
+    public SchermataCombattimento(Stage stage, Image imgEroe, Image imgNemico, Eroe eroe, Nemico nemico) {
         this.stage = stage;
         this.imgEroe = imgEroe;
-        this.imgGoblin = imgGoblin;
+        this.imgNemico = imgNemico;
         this.eroe = eroe;
-        this.goblin = goblin;
+        this.nemico = nemico;
         inizializzaInterfaccia();
     }
 
-    private void inizializzaInterfaccia() {
-
-        stage.setTitle("LONG WAY HOME - Scontro con il Goblin!");
+    /**
+     * Inizializza la struttura del layout JavaFX (sfondo, etichette, barre HP e bottoni).
+     */
+    private void inizializzaInterfaccia(){
+        stage.setTitle("LONG WAY HOME - Scontro con " + nemico.getNome() + "!");
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(15, 30, 15, 30));
 
@@ -71,19 +72,17 @@ public class SchermataCombattimentoGoblin {
         titoloLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 32));
         titoloLabel.setTextFill(Color.web("#FF5722"));
         titoloLabel.setStyle("-fx-effect: dropshadow(three-pass-box, #2B0B00, 10, 0.5, 0, 0);");
-        // Posizionamento titolo
+        // Posizione titolo
         BorderPane.setMargin(titoloLabel, new Insets(20, 0, 0, 0));
         BorderPane.setAlignment(titoloLabel, Pos.CENTER);
         root.setTop(titoloLabel);
 
-        // --- CONTENITORE CENTRALE: EROE VS GOBLIN ---
+        // --- CONTENITORE CENTRALE: EROE VS NEMICO ---
         HBox scontroBox = new HBox(40);
         scontroBox.setAlignment(Pos.CENTER);
 
-        // Box Eroe con Barra HP (Rosso/Arancio) FF5722 - D32F2F
         VBox eroeBox = creaBoxEroe();
 
-        // Scritta "VS" Stile bottone
         Label vsLabel = new Label("VS");
         vsLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 42));
         vsLabel.setTextFill(Color.web("#FF5722"));
@@ -96,10 +95,9 @@ public class SchermataCombattimentoGoblin {
                         "-fx-padding: 8px 18px;"
         );
 
-        // Box Goblin con Barra HP (Verde) 8BC34A - 4CAF50
-        VBox goblinBox = creaBoxGoblin();
+        VBox nemicoBox = creaBoxNemico();
 
-        scontroBox.getChildren().addAll(eroeBox, vsLabel, goblinBox);
+        scontroBox.getChildren().addAll(eroeBox, vsLabel, nemicoBox);
         root.setCenter(scontroBox);
 
         // --- SEZIONE BOTTONI AZIONE ---
@@ -117,6 +115,9 @@ public class SchermataCombattimentoGoblin {
         stage.setScene(scene);
     }
 
+    /**
+     * Crea il VBox contenente l'immagine, il nome e la barra HP dell'eroe.
+     */
     private VBox creaBoxEroe() {
         VBox box = new VBox(8);
         box.setAlignment(Pos.CENTER);
@@ -151,40 +152,63 @@ public class SchermataCombattimentoGoblin {
         return box;
     }
 
-    private VBox creaBoxGoblin() {
+    /**
+     * Crea il VBox contenente l'immagine, il nome e la barra HP del nemico.
+     */
+    private VBox creaBoxNemico() {
         VBox box = new VBox(8);
         box.setAlignment(Pos.CENTER);
 
-        ImageView sprite = new ImageView(imgGoblin);
+        // Identifica il colore dell'effetto visivo in base al tipo di nemico
+        String coloreGlow = getColoreNemico(nemico.getNome());
+
+        ImageView sprite = new ImageView(imgNemico);
         sprite.setFitWidth(220);
         sprite.setFitHeight(220);
         sprite.setPreserveRatio(true);
-        sprite.setStyle("-fx-effect: dropshadow(three-pass-box, #8BC34A, 22, 0.7, 0, 0);");
+        sprite.setStyle("-fx-effect: dropshadow(three-pass-box, " + coloreGlow + ", 22, 0.7, 0, 0);");
 
-        Label labelNome = new Label(goblin.getNome());
+        Label labelNome = new Label(nemico.getNome());
         labelNome.setFont(Font.font("Georgia", FontWeight.BOLD, 20));
-        labelNome.setTextFill(Color.web("#8BC34A"));
+        labelNome.setTextFill(Color.web(coloreGlow));
 
-        hpBarGoblin = new ProgressBar((double) goblin.getHpAttuali() / goblin.getHpMassimi());
-        hpBarGoblin.setPrefWidth(180);
-        hpBarGoblin.setPrefHeight(16);
-        hpBarGoblin.setStyle(
-                "-fx-accent: #4CAF50; " +
+        hpBarNemico = new ProgressBar((double) nemico.getHpAttuali() / nemico.getHpMassimi());
+        hpBarNemico.setPrefWidth(180);
+        hpBarNemico.setPrefHeight(16);
+        hpBarNemico.setStyle(
+                "-fx-accent: " + coloreGlow + "; " +
                         "-fx-control-inner-background: rgba(20, 5, 0, 0.8); " +
-                        "-fx-border-color: #8BC34A; " +
+                        "-fx-border-color: " + coloreGlow + "; " +
                         "-fx-border-width: 1.5px; " +
                         "-fx-border-radius: 5px; " +
                         "-fx-background-radius: 5px;"
         );
 
-        labelHpTextGoblin = new Label(goblin.getHpAttuali() + " / " + goblin.getHpMassimi() + " HP");
-        labelHpTextGoblin.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
-        labelHpTextGoblin.setTextFill(Color.WHITE);
+        labelHpTextNemico = new Label(nemico.getHpAttuali() + " / " + nemico.getHpMassimi() + " HP");
+        labelHpTextNemico.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
+        labelHpTextNemico.setTextFill(Color.WHITE);
 
-        box.getChildren().addAll(sprite, labelNome, hpBarGoblin, labelHpTextGoblin);
+        box.getChildren().addAll(sprite, labelNome, hpBarNemico, labelHpTextNemico);
         return box;
     }
 
+    /**
+     * Ritorna il codice colore esadecimale per lo styling in base al tipo di nemico.
+     */
+    private String getColoreNemico(String nomeNemico) {
+        return switch (nomeNemico) {
+            case "Goblin" -> "#8BC34A";
+            case "Gigante" -> "#FFC107";
+            case "Strega" -> "#880E4F";
+            case "Mago" -> "#1E88E5";
+            case "Drago" -> "#B71C1C";
+            default -> "#FFFFFF";
+        };
+    }
+
+    /**
+     * Crea il bottone con stile personalizzato e effetto hover.
+     */
     private Button creaBottone(String testo, String coloreBordo, String coloreHover) {
         Button btn = new Button(testo);
         btn.setFont(Font.font("Georgia", FontWeight.BOLD, 18));
@@ -211,8 +235,8 @@ public class SchermataCombattimentoGoblin {
         hpBarEroe.setProgress((double) eroe.getHpAttuali() / eroe.getHpMassimi());
         labelHpTextEroe.setText(eroe.getHpAttuali() + " / " + eroe.getHpMassimi() + " HP");
 
-        hpBarGoblin.setProgress((double) goblin.getHpAttuali() / goblin.getHpMassimi());
-        labelHpTextGoblin.setText(goblin.getHpAttuali() + " / " + goblin.getHpMassimi() + " HP");
+        hpBarNemico.setProgress((double) nemico.getHpAttuali() / nemico.getHpMassimi());
+        labelHpTextNemico.setText(nemico.getHpAttuali() + " / " + nemico.getHpMassimi() + " HP");
     }
 
     // --- METODI PER IL CONTROLLER ---

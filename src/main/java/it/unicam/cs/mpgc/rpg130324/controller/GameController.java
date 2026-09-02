@@ -58,12 +58,13 @@ public class GameController {
      * Calcola i secondi trascorsi dall'inizio della partita.
      */
     private long getTempoTrascorsoSecondi() {
+
         return (System.currentTimeMillis() - tempoPartita) / 1000;
     }
 
     /**
-    * Ferma i timer attivi e mostra la schermata di EndView.
-    */
+     * Ferma i timer attivi e mostra la schermata di EndView.
+     */
     private void gestisciGameOver() {
         if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
         EndView endView = new EndView(stage, nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
@@ -95,6 +96,9 @@ public class GameController {
         winView.mostra();
     }
 
+    /**
+     * Ripristina le variabili di stato e la mappa di gioco per iniziare una nuova partita.
+     */
     private void riavviaPartita() {
         this.nemiciSconfitti = 0;
         this.eroeRiga = 0;
@@ -164,22 +168,23 @@ public class GameController {
     //------------------------------------------------------------
     //                 GESTIONE COMBATTIMENTI
     //------------------------------------------------------------
+
     /**
-     * Gestisce il combattimento tra l'eroe e il goblin.
+     * Metodo helper unificato che istanzia la SchermataCombattimento generica
+     * e configura la logica del turno di gioco e dei timer.
      */
-    private void avviaCombattimentoGoblin() {
-        Nemico goblin = new Nemico("Goblin", 50, 10);
+    private void avviaCombattimento(Nemico nemico, String percorsoImgNemico, double intervalloAttaccoSecondi) {
         Image imgEroe = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
-        Image imgGoblin = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGoblin.png")));
+        Image imgNemico = new Image(Objects.requireNonNull(getClass().getResourceAsStream(percorsoImgNemico)));
 
-        SchermataCombattimentoGoblin vistaGoblin = new SchermataCombattimentoGoblin(stage, imgEroe, imgGoblin, eroe, goblin);
+        SchermataCombattimento vistaCombattimento = new SchermataCombattimento(stage, imgEroe, imgNemico, eroe, nemico);
 
-        //Azione ATTACCA
-        vistaGoblin.setOnAttaccaListener(() -> {
-            goblin.subisciDanno(eroe.getForzaAttacco());
-            vistaGoblin.aggiornaGrafica();
+        // Azione ATTACCA
+        vistaCombattimento.setOnAttaccaListener(() -> {
+            nemico.subisciDanno(eroe.getForzaAttacco());
+            vistaCombattimento.aggiornaGrafica();
 
-            if (goblin.getHpAttuali() <= 0) {
+            if (nemico.getHpAttuali() <= 0) {
                 if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
                 nemiciSconfitti++;
                 // Alla vittoria il nemico è sparito e l'eroe occupa la casella
@@ -188,16 +193,16 @@ public class GameController {
         });
 
         // Azione DIFENDI
-        vistaGoblin.setOnDifendiListener(() -> inDifesa = true);
+        vistaCombattimento.setOnDifendiListener(() -> inDifesa = true);
 
-        // Attacco automatico del Goblin ogni secondo
-        timerAttaccoNemico = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            if (goblin.getHpAttuali() > 0 && eroe.getHpAttuali() > 0) {
+        // Attacco automatico del nemico con l'intervallo specificato
+        timerAttaccoNemico = new Timeline(new KeyFrame(Duration.seconds(intervalloAttaccoSecondi), event -> {
+            if (nemico.getHpAttuali() > 0 && eroe.getHpAttuali() > 0) {
                 if (inDifesa) {
                     inDifesa = false;
                 } else {
-                    eroe.subisciDanno(goblin.getForzaAttacco());
-                    vistaGoblin.aggiornaGrafica();
+                    eroe.subisciDanno(nemico.getForzaAttacco());
+                    vistaCombattimento.aggiornaGrafica();
                     if (eroe.getHpAttuali() <= 0) {
                         timerAttaccoNemico.stop();
                         gestisciGameOver();
@@ -208,7 +213,15 @@ public class GameController {
         timerAttaccoNemico.setCycleCount(Timeline.INDEFINITE);
         timerAttaccoNemico.play();
 
-        vistaGoblin.mostra();
+        vistaCombattimento.mostra();
+    }
+
+    /**
+     * Gestisce il combattimento tra l'eroe e il goblin.
+     */
+    private void avviaCombattimentoGoblin() {
+        Nemico goblin = new Nemico("Goblin", 50, 10);
+        avviaCombattimento(goblin, "/imgGoblin.png", 1.0);
     }
 
     /**
@@ -216,45 +229,7 @@ public class GameController {
      */
     private void avviaCombattimentoGigante() {
         Nemico gigante = new Nemico("Gigante", 120, 20);
-        Image imgEroe = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
-        Image imgGigante = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGigante.png")));
-
-        SchermataCombattimentoGigante vistaGigante = new SchermataCombattimentoGigante(stage, imgEroe, imgGigante, eroe, gigante);
-
-        // Azione ATTACCA
-        vistaGigante.setOnAttaccaListener(() -> {
-            gigante.subisciDanno(eroe.getForzaAttacco());
-            vistaGigante.aggiornaGrafica();
-
-            if (gigante.getHpAttuali() <= 0) {
-                if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
-                nemiciSconfitti++;
-                mostraMappaDiGioco();
-            }
-        });
-
-        // Azione DIFENDI
-        vistaGigante.setOnDifendiListener(() -> inDifesa = true);
-
-        // Attacco automatico del Gigante ogni secondo
-        timerAttaccoNemico = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            if (gigante.getHpAttuali() > 0 && eroe.getHpAttuali() > 0) {
-                if (inDifesa) {
-                    inDifesa = false;
-                } else {
-                    eroe.subisciDanno(gigante.getForzaAttacco());
-                    vistaGigante.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) {
-                        timerAttaccoNemico.stop();
-                        gestisciGameOver();
-                    }
-                }
-            }
-        }));
-        timerAttaccoNemico.setCycleCount(Timeline.INDEFINITE);
-        timerAttaccoNemico.play();
-
-        vistaGigante.mostra();
+        avviaCombattimento(gigante, "/imgGigante.png", 1.0);
     }
 
     /**
@@ -262,45 +237,7 @@ public class GameController {
      */
     private void avviaCombattimentoStrega() {
         Nemico strega = new Nemico("Strega", 80, 30);
-        Image imgEroe = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
-        Image imgStrega = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgStrega.png")));
-
-        SchermataCombattimentoStrega vistaStrega = new SchermataCombattimentoStrega(stage, imgEroe, imgStrega, eroe, strega);
-
-        // Azione ATTACCA
-        vistaStrega.setOnAttaccaListener(() -> {
-            strega.subisciDanno(eroe.getForzaAttacco());
-            vistaStrega.aggiornaGrafica();
-
-            if (strega.getHpAttuali() <= 0) {
-                if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
-                nemiciSconfitti++;
-                mostraMappaDiGioco();
-            }
-        });
-
-        //Azione DIFENDI
-        vistaStrega.setOnDifendiListener(() -> inDifesa = true);
-
-        // Attacco automatico della Strega ogni secondo
-        timerAttaccoNemico = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            if (strega.getHpAttuali() > 0 && eroe.getHpAttuali() > 0) {
-                if (inDifesa) {
-                    inDifesa = false;
-                } else {
-                    eroe.subisciDanno(strega.getForzaAttacco());
-                    vistaStrega.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) {
-                        timerAttaccoNemico.stop();
-                        gestisciGameOver();
-                    }
-                }
-            }
-        }));
-        timerAttaccoNemico.setCycleCount(Timeline.INDEFINITE);
-        timerAttaccoNemico.play();
-
-        vistaStrega.mostra();
+        avviaCombattimento(strega, "/imgStrega.png", 1.0);
     }
 
     /**
@@ -308,45 +245,7 @@ public class GameController {
      */
     private void avviaCombattimentoMago() {
         Nemico mago = new Nemico("Mago", 80, 30);
-        Image imgEroe = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
-        Image imgMago = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgMago.png")));
-
-        SchermataCombattimentoMago vistaMago = new SchermataCombattimentoMago(stage, imgEroe, imgMago, eroe, mago);
-
-        // Azione ATTACCA
-        vistaMago.setOnAttaccaListener(() -> {
-            mago.subisciDanno(eroe.getForzaAttacco());
-            vistaMago.aggiornaGrafica();
-
-            if (mago.getHpAttuali() <= 0) {
-                if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
-                nemiciSconfitti++;
-                mostraMappaDiGioco();
-            }
-        });
-
-        //Azione DIFENDI
-        vistaMago.setOnDifendiListener(() -> inDifesa = true);
-
-        //Attacco automatico del Mago ogni secondo
-        timerAttaccoNemico = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            if (mago.getHpAttuali() > 0 && eroe.getHpAttuali() > 0) {
-                if (inDifesa) {
-                    inDifesa = false;
-                } else {
-                    eroe.subisciDanno(mago.getForzaAttacco());
-                    vistaMago.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) {
-                        timerAttaccoNemico.stop();
-                        gestisciGameOver();
-                    }
-                }
-            }
-        }));
-        timerAttaccoNemico.setCycleCount(Timeline.INDEFINITE);
-        timerAttaccoNemico.play();
-
-        vistaMago.mostra();
+        avviaCombattimento(mago, "/imgMago.png", 1.0);
     }
 
     /**
@@ -354,45 +253,7 @@ public class GameController {
      */
     private void avviaCombattimentoDrago() {
         Nemico drago = new Nemico("Drago", 200, 40);
-        Image imgEroe = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
-        Image imgDrago = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgDrago.png")));
-
-        SchermataCombattimentoDrago vistaDrago = new SchermataCombattimentoDrago(stage, imgEroe, imgDrago, eroe, drago);
-
-        // Azione ATTACCA
-        vistaDrago.setOnAttaccaListener(() -> {
-            drago.subisciDanno(eroe.getForzaAttacco());
-            vistaDrago.aggiornaGrafica();
-
-            if (drago.getHpAttuali() <= 0) {
-                if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
-                nemiciSconfitti++;
-                mostraMappaDiGioco();
-            }
-        });
-
-        // Azione DIFENDI
-        vistaDrago.setOnDifendiListener(() -> inDifesa = true);
-
-        // Attacco automatico del Drago ogni mezzo secondo
-        timerAttaccoNemico = new Timeline(new KeyFrame(Duration.seconds(0.5), event -> {
-            if (drago.getHpAttuali() > 0 && eroe.getHpAttuali() > 0) {
-                if (inDifesa) {
-                    inDifesa = false;
-                } else {
-                    eroe.subisciDanno(drago.getForzaAttacco());
-                    vistaDrago.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) {
-                        timerAttaccoNemico.stop();
-                        gestisciGameOver();
-                    }
-                }
-            }
-        }));
-        timerAttaccoNemico.setCycleCount(Timeline.INDEFINITE);
-        timerAttaccoNemico.play();
-
-        vistaDrago.mostra();
+        avviaCombattimento(drago, "/imgDrago.png", 0.5);
     }
 
     /**
@@ -415,12 +276,12 @@ public class GameController {
         mappaGioco[9][8] = "Drago";
 
         // Preparazione del pool totale contenente sia i 32 nemici che le 64 celle vuote
-        java.util.List<String> poolElementi = new java.util.ArrayList<>();
+        List<String> poolElementi = new ArrayList<>();
 
-        for (int i = 0; i < 12; i++) poolElementi.add("Goblin");
-        for (int i = 0; i < 12; i++) poolElementi.add("Gigante");
-        for (int i = 0; i < 10; i++) poolElementi.add("Strega");
-        for (int i = 0; i < 9; i++) poolElementi.add("Mago");
+        for (int i = 0; i < 9; i++) poolElementi.add("Goblin");
+        for (int i = 0; i < 9; i++) poolElementi.add("Gigante");
+        for (int i = 0; i < 7; i++) poolElementi.add("Strega");
+        for (int i = 0; i < 7; i++) poolElementi.add("Mago");
 
         // Aggiunta delle 64 celle vuote
         for (int i = 0; i < 64; i++) {
@@ -428,7 +289,7 @@ public class GameController {
         }
 
         // Mescolamento casuale dell'intero pool di 96 elementi
-        java.util.Collections.shuffle(poolElementi);
+        Collections.shuffle(poolElementi);
 
         // Assegnazione degli elementi rimescolati alle celle disponibili
         int indexPool = 0;
