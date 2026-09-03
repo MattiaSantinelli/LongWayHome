@@ -5,3 +5,5 @@ public class Eroe extends Personaggio{
         super(nome, 300, 20);
     }
 }
+
+
