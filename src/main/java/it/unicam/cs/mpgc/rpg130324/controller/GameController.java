@@ -2,6 +2,7 @@ package it.unicam.cs.mpgc.rpg130324.controller;
 
 import it.unicam.cs.mpgc.rpg130324.model.Eroe;
 import it.unicam.cs.mpgc.rpg130324.model.Nemico;
+import it.unicam.cs.mpgc.rpg130324.persistence.GestoreSalvataggio;
 import it.unicam.cs.mpgc.rpg130324.view.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -85,6 +86,10 @@ public class GameController {
      */
     private void gestisciGameOver() {
         fermaTuttiITimer();
+
+        // Salva i dati su file JSON
+        GestoreSalvataggio.salvaPartita(nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
+
         EndView endView = new EndView(stage, nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
         endView.setOnGiocaAncoraListener(this::riavviaPartita);
         endView.setOnFineListener(stage::close);
@@ -96,6 +101,10 @@ public class GameController {
      */
     private void gestisciVittoria() {
         fermaTuttiITimer();
+
+        // Salva i dati su file JSON
+        GestoreSalvataggio.salvaPartita(nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
+
         WinView winView = new WinView(stage, nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
         winView.setOnGiocaAncoraListener(this::riavviaPartita);
         winView.setOnFineListener(stage::close);

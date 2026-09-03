@@ -20,8 +20,12 @@ dependencies {
     implementation("org.openjfx:javafx-graphics:$javafxVersion:$platform")
     implementation("org.openjfx:javafx-base:$javafxVersion:$platform")
 
+    // Dipendenze per JUnit
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    // Dipendenze per Gson
+    implementation("com.google.code.gson:gson:2.13.2")
 }
 
 application {
