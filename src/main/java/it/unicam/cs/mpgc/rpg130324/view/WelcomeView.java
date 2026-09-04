@@ -7,12 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -38,10 +33,9 @@ public class WelcomeView {
     private void inizializzaInterfaccia() {
         stage.setTitle("LONG WAY HOME - Benvenuto");
 
-        VBox root = new VBox(25);
-        root.setAlignment(Pos.CENTER);
+        BorderPane mainLayout = new BorderPane();
 
-        // --- Gestione Sfondo (Immagine con Fallback su Gradiente) ---
+        // --- Gestione Sfondo su Layout Principale (Immagine con Fallback su Gradiente) ---
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
@@ -51,11 +45,18 @@ public class WelcomeView {
                     BackgroundPosition.CENTER,
                     new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
             );
-            root.setBackground(new Background(backgroundImage));
+            mainLayout.setBackground(new Background(backgroundImage));
         } catch (Exception e) {
             // Se l'immagine non è presente in src/main/resources, applica il gradiente scuro
-            root.setStyle("-fx-background: linear-gradient(to bottom, #2B0B00, #120300);");
+            mainLayout.setStyle("-fx-background: linear-gradient(to bottom, #2B0B00, #120300);");
         }
+
+        // Aggiunta della barra superiore integrata (Classifica, Aiuto)
+        HBox barraSuperiore = creaBarraPulsanti();
+        mainLayout.setTop(barraSuperiore);
+
+        VBox root = new VBox(25);
+        root.setAlignment(Pos.CENTER);
 
         // TITOLO GIOCO (Giallo con Glow Rosso)
         Label titoloLabel = new Label("LONG WAY HOME");
@@ -89,23 +90,66 @@ public class WelcomeView {
         bottoneInizia.setFont(Font.font("Georgia", FontWeight.BOLD, 20));
 
         // Stile dinamico bottone al passaggio del mouse
-        applicaStilePulsanteBase();
-        bottoneInizia.setOnMouseEntered(e -> applicaStilePulsanteHover());
-        bottoneInizia.setOnMouseExited(e -> applicaStilePulsanteBase());
+        applicaStilePulsanteBase(bottoneInizia);
+        bottoneInizia.setOnMouseEntered(e -> applicaStilePulsanteHover(bottoneInizia));
+        bottoneInizia.setOnMouseExited(e -> applicaStilePulsanteBase(bottoneInizia));
 
         // Aggiunta degli elementi al layout
         root.getChildren().addAll(titoloLabel, istruzioneLabel, campoNome, bottoneInizia);
 
-        Scene scene = new Scene(root, 800, 600);
+        mainLayout.setCenter(root);
+
+        Scene scene = new Scene(mainLayout, 800, 600);
         stage.setScene(scene);
         stage.setResizable(false);
     }
 
     /**
+     * Crea la barra superiore perfettamente unita allo sfondo generale della schermata.
+     */
+    private HBox creaBarraPulsanti() {
+        HBox barra = new HBox(12);
+        barra.setAlignment(Pos.CENTER_LEFT);
+        // Padding interno per distanziare i pulsanti dal bordo superiore e sinistro
+        barra.setStyle("-fx-background-color: transparent; -fx-padding: 20px 0 0 20px;");
+
+        // Bottone Classifica
+        Button btnClassifica = new Button("🏆 Storico");
+        preparaPulsanteTopBar(btnClassifica);
+        btnClassifica.setOnAction(e -> Classifica.mostraClassifica());
+
+        // Bottone Aiuto
+        Button btnAiuto = new Button("❓ Aiuto");
+        preparaPulsanteTopBar(btnAiuto);
+        btnAiuto.setOnAction(e -> {
+            Alert infoAiuto = new Alert(Alert.AlertType.INFORMATION);
+            infoAiuto.setTitle("Aiuto");
+            infoAiuto.setHeaderText("Guida di gioco");
+            infoAiuto.setContentText("Raggiungi la casa in fondo al percorso per vincere la partita!");
+            infoAiuto.showAndWait();
+        });
+
+        barra.getChildren().addAll(btnClassifica, btnAiuto);
+
+        return barra;
+    }
+
+    /**
+     * Applica font e comportamenti hover al singolo pulsante della barra superiore.
+     */
+    private void preparaPulsanteTopBar(Button btn) {
+        btn.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
+        btn.setPrefHeight(35);
+        applicaStilePulsanteBase(btn);
+        btn.setOnMouseEntered(e -> applicaStilePulsanteHover(btn));
+        btn.setOnMouseExited(e -> applicaStilePulsanteBase(btn));
+    }
+
+    /**
      * Caratteristiche base bottone (come appare quando non ci si passa sopra con il mouse)
      */
-    private void applicaStilePulsanteBase() {
-        bottoneInizia.setStyle(
+    private void applicaStilePulsanteBase(Button btn) {
+        btn.setStyle(
                 "-fx-background-color: linear-gradient(to bottom, #E64A19, #BF360C); " +
                         "-fx-border-color: #FFC107; " +
                         "-fx-border-width: 2px; " +
@@ -120,8 +164,8 @@ public class WelcomeView {
     /**
      * Caratteristiche avanzate bottone (come appare quando ci si passa sopra con il mouse)
      */
-    private void applicaStilePulsanteHover() {
-        bottoneInizia.setStyle(
+    private void applicaStilePulsanteHover(Button btn) {
+        btn.setStyle(
                 "-fx-background-color: linear-gradient(to bottom, #FF5722, #D32F2F); " +
                         "-fx-border-color: #FFE082; " +
                         "-fx-border-width: 2px; " +

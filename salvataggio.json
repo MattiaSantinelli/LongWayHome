@@ -1,5 +1,37 @@
-{
-  "nomeGiocatore": "Player_01",
-  "tempoTrascorso": 20,
-  "nemiciSconfitti": 7
-}
+[
+  {
+    "nomeGiocatore": "Teschio_205",
+    "tempoTrascorso": 20,
+    "nemiciSconfitti": 9
+  },
+  {
+    "nomeGiocatore": "Player_01",
+    "tempoTrascorso": 19,
+    "nemiciSconfitti": 6
+  },
+  {
+    "nomeGiocatore": "Mattia",
+    "tempoTrascorso": 35,
+    "nemiciSconfitti": 16
+  },
+  {
+    "nomeGiocatore": "Player_02",
+    "tempoTrascorso": 22,
+    "nemiciSconfitti": 9
+  },
+  {
+    "nomeGiocatore": "Player_03",
+    "tempoTrascorso": 24,
+    "nemiciSconfitti": 4
+  },
+  {
+    "nomeGiocatore": "Giovanni",
+    "tempoTrascorso": 28,
+    "nemiciSconfitti": 8
+  },
+  {
+    "nomeGiocatore": "Pie",
+    "tempoTrascorso": 17,
+    "nemiciSconfitti": 0
+  }
+]
