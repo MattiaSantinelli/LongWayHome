@@ -1,4 +1,4 @@
-package it.unicam.cs.mpgc.rpg130324.persistence;
+package it.unicam.cs.mpgc.rpg130324.model.persistence;
 
 public class DatiSalvataggio {
 

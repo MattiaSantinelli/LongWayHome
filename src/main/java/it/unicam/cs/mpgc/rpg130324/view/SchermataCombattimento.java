@@ -1,7 +1,7 @@
 package it.unicam.cs.mpgc.rpg130324.view;
 
-import it.unicam.cs.mpgc.rpg130324.model.Eroe;
-import it.unicam.cs.mpgc.rpg130324.model.Nemico;
+import it.unicam.cs.mpgc.rpg130324.model.entity.Eroe;
+import it.unicam.cs.mpgc.rpg130324.model.entity.Nemico;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

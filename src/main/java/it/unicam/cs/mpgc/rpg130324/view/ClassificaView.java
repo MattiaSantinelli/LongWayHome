@@ -1,6 +1,6 @@
 package it.unicam.cs.mpgc.rpg130324.view;
 
-import it.unicam.cs.mpgc.rpg130324.persistence.DatiSalvataggio;
+import it.unicam.cs.mpgc.rpg130324.model.persistence.DatiSalvataggio;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
