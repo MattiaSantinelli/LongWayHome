@@ -2,10 +2,12 @@ package it.unicam.cs.mpgc.rpg130324.controller;
 
 import it.unicam.cs.mpgc.rpg130324.model.Eroe;
 import it.unicam.cs.mpgc.rpg130324.model.Nemico;
+import it.unicam.cs.mpgc.rpg130324.persistence.DatiSalvataggio;
 import it.unicam.cs.mpgc.rpg130324.persistence.GestoreSalvataggio;
 import it.unicam.cs.mpgc.rpg130324.view.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -48,6 +50,15 @@ public class GameController {
      */
     public void avviaGioco() {
         WelcomeView welcomeView = new WelcomeView(stage);
+
+        // Il controller ascolta l'evento del pulsante classifica
+        welcomeView.setOnClassificaListener(() -> {
+            Scene scenaIniziale = stage.getScene();
+            List<DatiSalvataggio> listaSalvataggi = GestoreSalvataggio.caricaTuttiSalvataggi();
+            ClassificaView classificaView = new ClassificaView(listaSalvataggi, () -> stage.setScene(scenaIniziale));
+            stage.setScene(classificaView.getScene());
+        });
+
         // Il controller ascolta l'evento della schermata e gestisce il passaggio di stato
         welcomeView.setOnIniziaListener(nome -> {
             this.nomeGiocatore = nome;

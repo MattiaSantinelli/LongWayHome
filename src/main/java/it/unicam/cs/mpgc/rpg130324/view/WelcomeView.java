@@ -24,6 +24,7 @@ public class WelcomeView {
     private final Stage stage;
     private TextField campoNome;
     private Button bottoneInizia;
+    private Button btnClassifica;
 
     public WelcomeView(Stage stage) {
         this.stage = stage;
@@ -114,9 +115,8 @@ public class WelcomeView {
         barra.setStyle("-fx-background-color: transparent; -fx-padding: 20px 0 0 20px;");
 
         // Bottone Classifica
-        Button btnClassifica = new Button("🏆 Storico");
+        btnClassifica = new Button("🏆 Classifica");
         preparaPulsanteTopBar(btnClassifica);
-        btnClassifica.setOnAction(e -> Classifica.mostraClassifica());
 
         // Bottone Aiuto
         Button btnAiuto = new Button("❓ Aiuto");
@@ -140,13 +140,45 @@ public class WelcomeView {
     private void preparaPulsanteTopBar(Button btn) {
         btn.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
         btn.setPrefHeight(35);
-        applicaStilePulsanteBase(btn);
-        btn.setOnMouseEntered(e -> applicaStilePulsanteHover(btn));
-        btn.setOnMouseExited(e -> applicaStilePulsanteBase(btn));
+        applicaStileTopBarBase(btn);
+        btn.setOnMouseEntered(e -> applicaStileTopBarHover(btn));
+        btn.setOnMouseExited(e -> applicaStileTopBarBase(btn));
     }
 
     /**
-     * Caratteristiche base bottone (come appare quando non ci si passa sopra con il mouse)
+     * Caratteristiche base per i pulsanti della barra superiore (Storico e Aiuto).
+     */
+    private void applicaStileTopBarBase(Button btn) {
+        btn.setStyle(
+                "-fx-background-color: rgba(20, 10, 5, 0.65); " +
+                        "-fx-border-color: #BF360C; " +
+                        "-fx-border-width: 1px; " +
+                        "-fx-border-radius: 6px; " +
+                        "-fx-background-radius: 6px; " +
+                        "-fx-text-fill: #FFB74D; " +
+                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 1); " +
+                        "-fx-cursor: hand;"
+        );
+    }
+
+    /**
+     * Caratteristiche hover per i pulsanti della barra superiore (Storico e Aiuto).
+     */
+    private void applicaStileTopBarHover(Button btn) {
+        btn.setStyle(
+                "-fx-background-color: rgba(45, 15, 8, 0.85); " +
+                        "-fx-border-color: #FFC107; " +
+                        "-fx-border-width: 1px; " +
+                        "-fx-border-radius: 6px; " +
+                        "-fx-background-radius: 6px; " +
+                        "-fx-text-fill: #FFE082; " +
+                        "-fx-effect: dropshadow(three-pass-box, #E64A19, 8, 0.3, 0, 0); " +
+                        "-fx-cursor: hand;"
+        );
+    }
+
+    /**
+     * Caratteristiche base bottone (come appare quando non ci si passa sopra con il mouse).
      */
     private void applicaStilePulsanteBase(Button btn) {
         btn.setStyle(
@@ -162,7 +194,7 @@ public class WelcomeView {
     }
 
     /**
-     * Caratteristiche avanzate bottone (come appare quando ci si passa sopra con il mouse)
+     * Caratteristiche avanzate bottone (come appare quando ci si passa sopra con il mouse).
      */
     private void applicaStilePulsanteHover(Button btn) {
         btn.setStyle(
@@ -175,6 +207,13 @@ public class WelcomeView {
                         "-fx-effect: dropshadow(three-pass-box, #FF9800, 18, 0.7, 0, 0); " +
                         "-fx-cursor: hand;"
         );
+    }
+
+    /**
+     * Collega l'azione del pulsante Classifica alla logica del Controller.
+     */
+    public void setOnClassificaListener(Runnable callback) {
+        btnClassifica.setOnAction(e -> callback.run());
     }
 
     /**
