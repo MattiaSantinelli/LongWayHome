@@ -13,6 +13,13 @@ Progetto sviluppato per l'esame di Modellazione e Gestione della conoscenza |
 Anno accademico: 2025/26 - Università di Camerino
 
 ## 🎮 Caratteristiche principali
+- ✅ Sistema di combattimento a turni
+- ✅ 5 tipi di nemici
+- ✅ Logica di generazione casuale della mappa da gioco
+- ✅ Combattimento con nemici
+- ✅ Sviluppo logica di potenziamento dei personaggi
+- ✅ Salvataggio punteggi su File come in una classifica
+- ✅ Controlli da tastiera (WASD/frecce)
 
 ## 🚀 Come eseguire il progetto
 
@@ -39,3 +46,21 @@ cd MattiaSantinelli
 ---
 
 ## 🤖 Uso di strumenti di AI
+
+ChatGPT (OpenAI) utilizzato per:
+
+    -Comprendere concetti teorici (pattern MVC, gestione eventi)
+    -Generazione foto sfondo per la parte grafica del gicoo
+    -Generazione foto personaggi per la grafica del gioco
+
+GitHub Copilot (OpenAI) utilizzato per:
+
+    -Autocomletamento di metodi ripetitivi
+    -Generazione rapida di codice
+
+Gemini:
+
+    -Chiarire errori di compilazione (classi mancanti, import)
+    -Suggerimenti su struttura del codice e organizzazione delle classi
+    -Generazione bozze per metodi complessi (combattimento, salvataggio punteggi)
+    -Debug e risoluzione di problemi
