@@ -8,5 +8,10 @@
     "nomeGiocatore": "Teschio_205",
     "tempoTrascorso": 28,
     "nemiciSconfitti": 11
+  },
+  {
+    "nomeGiocatore": "Player_01",
+    "tempoTrascorso": 27,
+    "nemiciSconfitti": 10
   }
 ]
