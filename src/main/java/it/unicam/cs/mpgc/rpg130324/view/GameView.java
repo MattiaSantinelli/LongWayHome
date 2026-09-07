@@ -18,36 +18,36 @@ import java.util.function.Consumer;
 public class GameView {
 
     private final Stage stage;
-    private final int RIGHE = 10;
-    private final int COLONNE = 10;
-    private final String nomeGiocatore; // Campo per memorizzare il nome del giocatore
+    private final int ROW = 10;
+    private final int COLUMN = 10;
+    private final String namePlayer; // Campo per memorizzare il nome del giocatore
 
     // Mappa da gioco
-    private final StackPane[][] grigliaCelle = new StackPane[RIGHE][COLONNE];
+    private final StackPane[][] gridCells = new StackPane[ROW][COLUMN];
 
     // Immagini degli elementi di gioco
-    private Image imgEroe;
+    private Image imgHero;
     private Image imgGoblin;
-    private Image imgGigante;
-    private Image imgStrega;
-    private Image imgMago;
-    private Image imgDrago;
-    private Image imgCasa;
+    private Image imgGiant;
+    private Image imgWitch;
+    private Image imgWizard;
+    private Image imgDragon;
+    private Image imgHouse;
 
     // Callback per notificare il GameController quando l'utente preme un tasto
     private Consumer<String> onMovimentoListener;
 
-    public GameView(Stage stage, String nomeGiocatore) {
+    public GameView(Stage stage, String namePlayer) {
         this.stage = stage;
-        this.nomeGiocatore = nomeGiocatore;
-        inizializzaInterfaccia();
-        caricaImmagini();
+        this.namePlayer = namePlayer;
+        initializeInterface();
+        loadImages();
     }
 
     /**
      * Inizializza la struttura del layout JavaFX (sfondo, etichette e griglia)
      */
-    private void inizializzaInterfaccia() {
+    private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Mappa di Gioco");
 
         VBox root = new VBox(20);
@@ -82,26 +82,26 @@ public class GameView {
         gridPane.setStyle("-fx-background-color: rgba(43, 11, 0, 0.6); -fx-padding: 10px; -fx-border-color: #E65100; -fx-border-width: 2px; -fx-border-radius: 5px;");
 
         // Creazione mappa da gioco
-        for (int r = 0; r < RIGHE; r++) {
-            for (int c = 0; c < COLONNE; c++) {
-                StackPane cella = new StackPane();
-                cella.setPrefSize(50, 50);
+        for (int r = 0; r < ROW; r++) {
+            for (int c = 0; c < COLUMN; c++) {
+                StackPane cell = new StackPane();
+                cell.setPrefSize(50, 50);
 
                 if ((r + c) % 2 == 0) {
-                    cella.setStyle("-fx-background-color: rgba(30, 30, 30, 0.45); -fx-border-color: rgba(230, 81, 0, 0.3);");
+                    cell.setStyle("-fx-background-color: rgba(30, 30, 30, 0.45); -fx-border-color: rgba(230, 81, 0, 0.3);");
                 } else {
-                    cella.setStyle("-fx-background-color: rgba(10, 10, 10, 0.55); -fx-border-color: rgba(230, 81, 0, 0.3);");
+                    cell.setStyle("-fx-background-color: rgba(10, 10, 10, 0.55); -fx-border-color: rgba(230, 81, 0, 0.3);");
                 }
 
-                grigliaCelle[r][c] = cella;
-                gridPane.add(cella, c, r);
+                gridCells[r][c] = cell;
+                gridPane.add(cell, c, r);
             }
         }
 
         root.getChildren().addAll(infoLabel, gridPane);
 
         Scene scene = new Scene(root, 800, 650);
-        scene.setOnKeyPressed(this::gestisciPressioneTasto);
+        scene.setOnKeyPressed(this::handleKeyPress);
 
         stage.setScene(scene);
         stage.setResizable(false);
@@ -110,20 +110,20 @@ public class GameView {
     /**
      * Carica tutte le immagini dei personaggi dalla cartella resources.
      */
-    private void caricaImmagini() {
-        try { imgEroe = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png"))); } catch (Exception ignored) {}
+    private void loadImages() {
+        try { imgHero = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png"))); } catch (Exception ignored) {}
         try { imgGoblin = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGoblin.png"))); } catch (Exception ignored) {}
-        try { imgGigante = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGigante.png"))); } catch (Exception ignored) {}
-        try { imgStrega = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgStrega.png"))); } catch (Exception ignored) {}
-        try { imgMago = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgMago.png"))); } catch (Exception ignored) {}
-        try { imgDrago = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgDrago.png"))); } catch (Exception ignored) {}
-        try { imgCasa = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgCasa.png"))); } catch (Exception ignored) {}
+        try { imgGiant = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGigante.png"))); } catch (Exception ignored) {}
+        try { imgWitch = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgStrega.png"))); } catch (Exception ignored) {}
+        try { imgWizard = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgMago.png"))); } catch (Exception ignored) {}
+        try { imgDragon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgDrago.png"))); } catch (Exception ignored) {}
+        try { imgHouse = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgCasa.png"))); } catch (Exception ignored) {}
     }
 
     /**
      * Intercetta la pressione dei tasti e invia la direzione al Controller.
      */
-    private void gestisciPressioneTasto(KeyEvent event) {
+    private void handleKeyPress(KeyEvent event) {
         if (onMovimentoListener == null) return;
 
         switch (event.getCode()) {
@@ -138,35 +138,35 @@ public class GameView {
     /**
      * Permette al Controller di registrare una funzione di callback per il movimento.
      */
-    public void setOnMovimentoListener(Consumer<String> listener) {
+    public void setOnMoveListener(Consumer<String> listener) {
         this.onMovimentoListener = listener;
     }
 
     /**
      * Pulisce e ridisegna la mappa intera partendo dalla matrice.
      */
-    public void posizionaNemici(String[][] mappaGioco) {
+    public void enemyPosition(String[][] mappaGioco) {
         // Svuota i contenuti precedenti delle celle
-        for (int r = 0; r < RIGHE; r++) {
-            for (int c = 0; c < COLONNE; c++) {
-                grigliaCelle[r][c].getChildren().clear();
+        for (int r = 0; r < ROW; r++) {
+            for (int c = 0; c < COLUMN; c++) {
+                gridCells[r][c].getChildren().clear();
             }
         }
 
         // Disegna gli elementi aggiornati
-        for (int r = 0; r < RIGHE; r++) {
-            for (int c = 0; c < COLONNE; c++) {
+        for (int r = 0; r < ROW; r++) {
+            for (int c = 0; c < COLUMN; c++) {
                 String elemento = mappaGioco[r][c];
                 if (elemento == null || elemento.isEmpty()) continue;
 
                 switch (elemento) {
-                    case "Eroe" -> posizionaSingoloElemento(imgEroe, "-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0);", r, c);
-                    case "Goblin" -> posizionaSingoloElemento(imgGoblin, "-fx-effect: dropshadow(three-pass-box, #8BC34A, 10, 0.5, 0, 0);", r, c);
-                    case "Gigante" -> posizionaSingoloElemento(imgGigante, "-fx-effect: dropshadow(three-pass-box, #FFC107, 16, 0.7, 0, 0);", r, c);
-                    case "Strega" -> posizionaSingoloElemento(imgStrega, "-fx-effect: dropshadow(three-pass-box, #880E4F, 16, 0.7, 0, 0);", r, c);
-                    case "Mago" -> posizionaSingoloElemento(imgMago, "-fx-effect: dropshadow(three-pass-box, #1E88E5, 16, 0.7, 0, 0);", r, c);
-                    case "Drago" -> posizionaSingoloElemento(imgDrago, "-fx-effect: dropshadow(three-pass-box, #B71C1C, 16, 0.7, 0, 0);", r, c);
-                    case "Casa" -> posizionaSingoloElemento(imgCasa, null, r, c);
+                    case "Eroe" -> placeSingleItem(imgHero, "-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0);", r, c);
+                    case "Goblin" -> placeSingleItem(imgGoblin, "-fx-effect: dropshadow(three-pass-box, #8BC34A, 10, 0.5, 0, 0);", r, c);
+                    case "Gigante" -> placeSingleItem(imgGiant, "-fx-effect: dropshadow(three-pass-box, #FFC107, 16, 0.7, 0, 0);", r, c);
+                    case "Strega" -> placeSingleItem(imgWitch, "-fx-effect: dropshadow(three-pass-box, #880E4F, 16, 0.7, 0, 0);", r, c);
+                    case "Mago" -> placeSingleItem(imgWizard, "-fx-effect: dropshadow(three-pass-box, #1E88E5, 16, 0.7, 0, 0);", r, c);
+                    case "Drago" -> placeSingleItem(imgDragon, "-fx-effect: dropshadow(three-pass-box, #B71C1C, 16, 0.7, 0, 0);", r, c);
+                    case "Casa" -> placeSingleItem(imgHouse, null, r, c);
                 }
             }
         }
@@ -175,17 +175,17 @@ public class GameView {
     /**
      * Helper interno per creare un'ImageView con l'effetto di luce e posizionarla sulla cella.
      */
-    private void posizionaSingoloElemento(Image img, String stile, int riga, int colonna) {
+    private void placeSingleItem(Image img, String style, int row, int column) {
         if (img == null) return;
         ImageView iv = new ImageView(img);
         iv.setFitWidth(40);
         iv.setFitHeight(40);
         iv.setPreserveRatio(true);
-        if (stile != null) iv.setStyle(stile);
-        grigliaCelle[riga][colonna].getChildren().add(iv);
+        if (style != null) iv.setStyle(style);
+        gridCells[row][column].getChildren().add(iv);
     }
 
-    public void mostra() {
+    public void show() {
         stage.show();
     }
 }

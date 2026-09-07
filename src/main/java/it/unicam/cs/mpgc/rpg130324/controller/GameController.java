@@ -1,9 +1,9 @@
 package it.unicam.cs.mpgc.rpg130324.controller;
 
-import it.unicam.cs.mpgc.rpg130324.model.entity.Eroe;
-import it.unicam.cs.mpgc.rpg130324.model.entity.Nemico;
-import it.unicam.cs.mpgc.rpg130324.model.persistence.DatiSalvataggio;
-import it.unicam.cs.mpgc.rpg130324.model.persistence.GestoreSalvataggio;
+import it.unicam.cs.mpgc.rpg130324.model.entity.Hero;
+import it.unicam.cs.mpgc.rpg130324.model.entity.Enemy;
+import it.unicam.cs.mpgc.rpg130324.model.persistence.SaveData;
+import it.unicam.cs.mpgc.rpg130324.model.persistence.SaveManager;
 import it.unicam.cs.mpgc.rpg130324.view.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -20,174 +20,176 @@ import java.util.List;
 public class GameController {
 
     private final Stage stage;
-    private String nomeGiocatore; // Campo per memorizzare il nome del giocatore
+    private String playerName; // Campo per memorizzare il nome del giocatore
 
     // Variabili per schermata di combattimento tra personaggi
-    private Eroe eroe;
-    private Timeline timerAttaccoNemico;
-    private boolean inDifesa = false;
+    private Hero hero;
+    private Timeline enemyAttackTimer;
+    private boolean isDefending = false;
 
     // Timer per lo scorrere del tempo di gioco e per potenziare i nemici
-    private Timeline timerPotenziamentoNemici;
-    private int livelloPotenziamentoNemici = 0;
+    private Timeline enemyBuffTimer;
+    private int enemyBuffLevel = 0;
 
     // Variabili per creazione mappa da gioco
-    private int eroeRiga = 0;
-    private int eroeColonna = 0;
-    private final String[][] mappaGioco = new String[10][10];
+    private int heroRow = 0;
+    private int heroColumn = 0;
+    private final String[][] gameMap = new String[10][10];
 
     // Variabili per statistiche della partita
-    private long tempoPartita;
-    private int nemiciSconfitti = 0;
+    private long gameTime;
+    private int defeatedEnemies = 0;
 
     public GameController(Stage stage) {
         this.stage = stage;
-        inizializzaMappaGioco();
+        initializeGameMap();
     }
 
     /**
      * Avvia l'applicazione mostrando la prima schermata (WelcomeView).
      */
-    public void avviaGioco() {
+    public void startGame() {
         WelcomeView welcomeView = new WelcomeView(stage);
 
         // Il controller ascolta l'evento del pulsante classifica
-        welcomeView.setOnClassificaListener(() -> {
-            Scene scenaIniziale = stage.getScene();
-            List<DatiSalvataggio> listaSalvataggi = GestoreSalvataggio.caricaTuttiSalvataggi();
-            ClassificaView classificaView = new ClassificaView(listaSalvataggi, () -> stage.setScene(scenaIniziale));
+        welcomeView.setOnLeaderboardListener(() -> {
+            Scene initialScene = stage.getScene();
+            List<SaveData> savedGames = SaveManager.loadAllSaves();
+            LeaderboardView classificaView = new LeaderboardView(savedGames, () -> stage.setScene(initialScene));
             stage.setScene(classificaView.getScene());
         });
 
         // Il controller ascolta l'evento della schermata e gestisce il passaggio di stato
-        welcomeView.setOnIniziaListener(nome -> {
-            this.nomeGiocatore = nome;
-            this.eroe = new Eroe(nomeGiocatore);
-            this.tempoPartita = System.currentTimeMillis();
+        welcomeView.setOnStartListener(name -> {
+            this.playerName = name;
+            this.hero = new Hero(playerName);
+            this.gameTime = System.currentTimeMillis();
             // Avvia il loop dei 30 secondi per potenziare i nemici futuri
-            avviaTimerPotenziamentoNemici();
-            mostraMappaDiGioco();
+            startEnemyBuffTimer();
+            showGameMap();
         });
-        welcomeView.mostra();
+        welcomeView.show();
     }
 
     /**
      * Incrementa il livello di difficoltà/potenziamento dei nemici ogni 30 secondi.
      */
-    private void avviaTimerPotenziamentoNemici() {
-        if (timerPotenziamentoNemici != null) timerPotenziamentoNemici.stop();
-        livelloPotenziamentoNemici = 0;
+    private void startEnemyBuffTimer() {
+        if (enemyBuffTimer != null) {
+            enemyBuffTimer.stop();
+        }
+        enemyBuffLevel = 0;
 
-        timerPotenziamentoNemici = new Timeline(new KeyFrame(Duration.seconds(30), event -> {
-            livelloPotenziamentoNemici++;
+        enemyBuffTimer = new Timeline(new KeyFrame(Duration.seconds(30), event -> {
+            enemyBuffLevel++;
         }));
-        timerPotenziamentoNemici.setCycleCount(Timeline.INDEFINITE);
-        timerPotenziamentoNemici.play();
+        enemyBuffTimer.setCycleCount(Timeline.INDEFINITE);
+        enemyBuffTimer.play();
     }
 
     /**
      * Calcola i secondi trascorsi dall'inizio della partita.
      */
-    private long getTempoTrascorsoSecondi() {
-        return (System.currentTimeMillis() - tempoPartita) / 1000;
+    private long getElapsedTimeSeconds() {
+        return (System.currentTimeMillis() - gameTime) / 1000;
     }
 
     /**
      * Ferma i timer attivi e mostra la schermata di EndView.
      */
-    private void gestisciGameOver() {
-        fermaTuttiITimer();
-        EndView endView = new EndView(stage, nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
-        endView.setOnGiocaAncoraListener(this::riavviaPartita);
-        endView.setOnFineListener(stage::close);
-        endView.mostra();
+    private void handleGameOver() {
+        stopAllTimers();
+        EndView endView = new EndView(stage, playerName, getElapsedTimeSeconds(), defeatedEnemies);
+        endView.setOnPlayAgainListener(this::restartGame);
+        endView.setOnEndListener(stage::close);
+        endView.show();
     }
 
     /**
      * Ferma i timer attivi e mostra la schermata di WinView.
      */
-    private void gestisciVittoria() {
-        fermaTuttiITimer();
+    private void handleVictory() {
+        stopAllTimers();
 
         // Salva i dati su file JSON
-        GestoreSalvataggio.salvaPartita(nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
+        SaveManager.salvaPartita(playerName, getElapsedTimeSeconds(), defeatedEnemies);
 
-        WinView winView = new WinView(stage, nomeGiocatore, getTempoTrascorsoSecondi(), nemiciSconfitti);
-        winView.setOnGiocaAncoraListener(this::riavviaPartita);
-        winView.setOnFineListener(stage::close);
-        winView.mostra();
+        WinView winView = new WinView(stage, playerName, getElapsedTimeSeconds(), defeatedEnemies);
+        winView.setOnPlayAgainListener(this::restartGame);
+        winView.setOnEndListener(stage::close);
+        winView.show();
     }
 
     /**
      * Ferma tutti i timer attivi (attacco nemico e potenziamento nemici).
      */
-    private void fermaTuttiITimer() {
-        if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
-        if (timerPotenziamentoNemici != null) timerPotenziamentoNemici.stop();
+    private void stopAllTimers() {
+        if (enemyAttackTimer != null) enemyAttackTimer.stop();
+        if (enemyBuffTimer != null) enemyBuffTimer.stop();
     }
 
     /**
      * Riavvia la partita.
      */
-    private void riavviaPartita() {
-        this.nemiciSconfitti = 0;
-        this.eroeRiga = 0;
-        this.eroeColonna = 0;
+    private void restartGame() {
+        this.defeatedEnemies = 0;
+        this.heroRow = 0;
+        this.heroColumn = 0;
 
-        inizializzaMappaGioco(); // Ripristina la mappa di gioco
-        avviaGioco(); // Torna all'inizio
+        initializeGameMap(); // Ripristina la mappa di gioco
+        startGame(); // Torna all'inizio
     }
 
     /**
      * Transizione verso la schermata di gioco.
      */
-    private void mostraMappaDiGioco() {
-        GameView gameView = new GameView(stage, nomeGiocatore);
-        gameView.posizionaNemici(mappaGioco);
-        gameView.setOnMovimentoListener(direzione -> gestisciMovimento(direzione, gameView));
-        gameView.mostra();
+    private void showGameMap() {
+        GameView gameView = new GameView(stage, playerName);
+        gameView.enemyPosition(gameMap);
+        gameView.setOnMoveListener(direction -> handleMovement(direction, gameView));
+        gameView.show();
     }
 
     /**
      * Calcola le nuove coordinate dell'eroe in base alla direzione e aggiorna la matrice.
      */
-    private void gestisciMovimento(String direzione, GameView gameView) {
-        int nuovaRiga = eroeRiga;
-        int nuovaColonna = eroeColonna;
+    private void handleMovement(String direction, GameView gameView) {
+        int newRow = heroRow;
+        int newColumn = heroColumn;
 
-        switch (direzione) {
-            case "SU" -> nuovaRiga--;
-            case "GIU" -> nuovaRiga++;
-            case "SINISTRA" -> nuovaColonna--;
-            case "DESTRA" -> nuovaColonna++;
+        switch (direction) {
+            case "SU" -> newRow--;
+            case "GIU" -> newRow++;
+            case "SINISTRA" -> newColumn--;
+            case "DESTRA" -> newColumn++;
         }
 
         // Controllo dei confini della mappa (10x10)
-        if (nuovaRiga < 0 || nuovaRiga >= 10 || nuovaColonna < 0 || nuovaColonna >= 10) {
+        if (newRow < 0 || newRow >= 10 || newColumn < 0 || newColumn >= 10) {
             return;
         }
 
-        String destinazione = mappaGioco[nuovaRiga][nuovaColonna];
+        String destination = gameMap[newRow][newColumn];
 
         // Rimuove l'eroe dalla vecchia posizione della matrice
-        mappaGioco[eroeRiga][eroeColonna] = "";
+        gameMap[heroRow][heroColumn] = "";
         // Aggiorna le coordinate dell'eroe
-        this.eroeRiga = nuovaRiga;
-        this.eroeColonna = nuovaColonna;
+        this.heroRow = newRow;
+        this.heroColumn = newColumn;
         // Inserisce l'eroe nella nuova posizione della matrice
-        mappaGioco[eroeRiga][eroeColonna] = "Eroe";
+        gameMap[heroRow][heroColumn] = "Eroe";
         // Aggiorna la vista della mappa
-        gameView.posizionaNemici(mappaGioco);
+        gameView.enemyPosition(gameMap);
 
         // Se nella casella di arrivo c'era un nemico o la casa, gestisce l'evento
-        if (destinazione != null && !destinazione.isEmpty() && !destinazione.equals("Eroe")) {
-            switch (destinazione) {
-                case "Goblin" -> avviaCombattimentoGoblin();
-                case "Gigante" -> avviaCombattimentoGigante();
-                case "Strega" -> avviaCombattimentoStrega();
-                case "Mago" -> avviaCombattimentoMago();
-                case "Drago" -> avviaCombattimentoDrago();
-                case "Casa" -> gestisciVittoria();
+        if (destination != null && !destination.isEmpty() && !destination.equals("Eroe")) {
+            switch (destination) {
+                case "Goblin" -> startGoblinCombat();
+                case "Gigante" -> startGiantCombat();
+                case "Strega" -> startWitchCombat();
+                case "Mago" -> startWizardCombat();
+                case "Drago" -> startDragonCombat();
+                case "Casa" -> handleVictory();
             }
         }
     }
@@ -199,83 +201,85 @@ public class GameController {
     /**
      * Gestisce il combattimento tra l'eroe e i nemici.
      */
-    private void avviaCombattimento(Nemico nemico, String percorsoImgNemico, double intervalloAttaccoSecondi) {
+    private void startCombat(Enemy enemy, String enemyImagePath, double attackIntervalSeconds) {
         // Applica il potenziamento basato sui blocchi da 30 secondi trascorsi
-        if (livelloPotenziamentoNemici > 0) {
-            int extraHp = livelloPotenziamentoNemici * 15;      // +15 HP per ogni 30s
-            int extraDanno = livelloPotenziamentoNemici * 10;    // +10 Danno per ogni 30s
-            nemico.potenziati(extraHp, extraDanno);
+        if (enemyBuffLevel > 0) {
+            int extraHp = enemyBuffLevel * 15;      // +15 HP per ogni 30s
+            int extraDanno = enemyBuffLevel * 10;    // +10 Danno per ogni 30s
+            enemy.isBuffed(extraHp, extraDanno);
         }
 
-        Image imgEroe = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
-        Image imgNemico = new Image(Objects.requireNonNull(getClass().getResourceAsStream(percorsoImgNemico)));
+        Image imgHero = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
+        Image imgEnemy = new Image(Objects.requireNonNull(getClass().getResourceAsStream(enemyImagePath)));
 
-        SchermataCombattimento vistaCombattimento = new SchermataCombattimento(stage, imgEroe, imgNemico, eroe, nemico);
+        CombatView combatView = new CombatView(stage, imgHero, imgEnemy, hero, enemy);
 
         // Azione ATTACCA
-        vistaCombattimento.setOnAttaccaListener(() -> {
-            nemico.subisciDanno(eroe.getForzaAttacco());
-            vistaCombattimento.aggiornaGrafica();
+        combatView.setOnAttackListener(() -> {
+            enemy.takeDamage(hero.getAttackPower());
+            combatView.updateUI();
 
-            if (nemico.getHpAttuali() <= 0) {
-                if (timerAttaccoNemico != null) timerAttaccoNemico.stop();
-                nemiciSconfitti++;
+            if (enemy.getCurrentHp() <= 0) {
+                if (enemyAttackTimer != null) {
+                    enemyAttackTimer.stop();
+                }
+                defeatedEnemies++;
 
                 // POTENZIAMENTO EROE: Ogni 3 nemici sconfitti
-                if (nemiciSconfitti % 3 == 0) {
-                    eroe.potenziati(20, 5); // +20 HP Massimi, +5 Attacco
+                if (defeatedEnemies % 3 == 0) {
+                    hero.isBuffed(20, 5); // +20 HP Massimi, +5 Attacco
                 }
 
-                mostraMappaDiGioco();
+                showGameMap();
             }
         });
 
         // Azione DIFENDI
-        vistaCombattimento.setOnDifendiListener(() -> inDifesa = true);
+        combatView.setOnDefendListener(() -> isDefending = true);
 
         // Attacco automatico del nemico
-        timerAttaccoNemico = new Timeline(new KeyFrame(Duration.seconds(intervalloAttaccoSecondi), event -> {
-            if (nemico.getHpAttuali() > 0 && eroe.getHpAttuali() > 0) {
-                if (inDifesa) {
-                    inDifesa = false;
+        enemyAttackTimer = new Timeline(new KeyFrame(Duration.seconds(attackIntervalSeconds), event -> {
+            if (enemy.getCurrentHp() > 0 && hero.getCurrentHp() > 0) {
+                if (isDefending) {
+                    isDefending = false;
                 } else {
-                    eroe.subisciDanno(nemico.getForzaAttacco());
-                    vistaCombattimento.aggiornaGrafica();
-                    if (eroe.getHpAttuali() <= 0) {
-                        gestisciGameOver();
+                    hero.takeDamage(enemy.getAttackPower());
+                    combatView.updateUI();
+                    if (hero.getCurrentHp() <= 0) {
+                        handleGameOver();
                     }
                 }
             }
         }));
-        timerAttaccoNemico.setCycleCount(Timeline.INDEFINITE);
-        timerAttaccoNemico.play();
+        enemyAttackTimer.setCycleCount(Timeline.INDEFINITE);
+        enemyAttackTimer.play();
 
-        vistaCombattimento.mostra();
+        combatView.show();
     }
 
-    private void avviaCombattimentoGoblin() {
-        Nemico goblin = new Nemico("Goblin", 50, 10);
-        avviaCombattimento(goblin, "/imgGoblin.png", 1.0);
+    private void startGoblinCombat() {
+        Enemy goblin = new Enemy("Goblin", 50, 10);
+        startCombat(goblin, "/imgGoblin.png", 1.0);
     }
 
-    private void avviaCombattimentoGigante() {
-        Nemico gigante = new Nemico("Gigante", 120, 20);
-        avviaCombattimento(gigante, "/imgGigante.png", 1.0);
+    private void startGiantCombat() {
+        Enemy gigante = new Enemy("Gigante", 120, 20);
+        startCombat(gigante, "/imgGigante.png", 1.0);
     }
 
-    private void avviaCombattimentoStrega() {
-        Nemico strega = new Nemico("Strega", 80, 30);
-        avviaCombattimento(strega, "/imgStrega.png", 1.0);
+    private void startWitchCombat() {
+        Enemy strega = new Enemy("Strega", 80, 30);
+        startCombat(strega, "/imgStrega.png", 1.0);
     }
 
-    private void avviaCombattimentoMago() {
-        Nemico mago = new Nemico("Mago", 80, 30);
-        avviaCombattimento(mago, "/imgMago.png", 1.0);
+    private void startWizardCombat() {
+        Enemy mago = new Enemy("Mago", 80, 30);
+        startCombat(mago, "/imgMago.png", 1.0);
     }
 
-    private void avviaCombattimentoDrago() {
-        Nemico drago = new Nemico("Drago", 200, 40);
-        avviaCombattimento(drago, "/imgDrago.png", 0.5);
+    private void startDragonCombat() {
+        Enemy drago = new Enemy("Drago", 200, 40);
+        startCombat(drago, "/imgDrago.png", 0.5);
     }
 
 
@@ -283,51 +287,51 @@ public class GameController {
      * Popola la matrice logica con le stringhe corrispondenti alle posizioni
      * iniziali dei personaggi e della casa di arrivo.
      */
-    private void inizializzaMappaGioco() {
+    private void initializeGameMap() {
         // Pulizia preliminare della matrice
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 10; c++) {
-                mappaGioco[r][c] = "";
+                gameMap[r][c] = "";
             }
         }
 
         // Posizioni fisse prescritte
-        mappaGioco[0][0] = "Eroe";
-        mappaGioco[9][9] = "Casa";
-        mappaGioco[8][8] = "Mago";
-        mappaGioco[8][9] = "Drago";
-        mappaGioco[9][8] = "Drago";
+        gameMap[0][0] = "Eroe";
+        gameMap[9][9] = "Casa";
+        gameMap[8][8] = "Mago";
+        gameMap[8][9] = "Drago";
+        gameMap[9][8] = "Drago";
 
         // Preparazione del pool totale contenente sia i 32 nemici che le 64 celle vuote
-        List<String> poolElementi = new ArrayList<>();
+        List<String> elementPool = new ArrayList<>();
 
-        for (int i = 0; i < 9; i++) poolElementi.add("Goblin");
-        for (int i = 0; i < 9; i++) poolElementi.add("Gigante");
-        for (int i = 0; i < 7; i++) poolElementi.add("Strega");
-        for (int i = 0; i < 7; i++) poolElementi.add("Mago");
+        for (int i = 0; i < 9; i++) elementPool.add("Goblin");
+        for (int i = 0; i < 9; i++) elementPool.add("Gigante");
+        for (int i = 0; i < 7; i++) elementPool.add("Strega");
+        for (int i = 0; i < 7; i++) elementPool.add("Mago");
 
         // Aggiunta delle 64 celle vuote
         for (int i = 0; i < 64; i++) {
-            poolElementi.add("");
+            elementPool.add("");
         }
 
         // Mescolamento casuale dell'interno pool di 96 elementi
-        Collections.shuffle(poolElementi);
+        Collections.shuffle(elementPool);
 
         // Assegnazione degli elementi rimescolati alle celle disponibili
         int indexPool = 0;
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 10; c++) {
                 // Se la cella non è occupata dai ruoli fissi
-                if (mappaGioco[r][c].isEmpty()) {
-                    mappaGioco[r][c] = poolElementi.get(indexPool);
+                if (gameMap[r][c].isEmpty()) {
+                    gameMap[r][c] = elementPool.get(indexPool);
                     indexPool++;
                 }
             }
         }
     }
 
-    public String getNomeGiocatore() {
-        return nomeGiocatore;
+    public String getPlayerName() {
+        return playerName;
     }
 }

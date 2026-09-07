@@ -4,16 +4,16 @@ import it.unicam.cs.mpgc.rpg130324.controller.GameController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-public class App {
+public class Launcher {
 
     public static void main(String[] args) {
-        Launcher.main(args);
+        App.main(args);
     }
 
     // Deve essere public e static per permettere a JavaFX di istanziarla!
-    public static class Launcher extends Application {
+    public static class App extends Application {
 
-        public Launcher() {
+        public App() {
             // Costruttore no-arg esplicito per la reflection di JavaFX
         }
 
@@ -21,7 +21,7 @@ public class App {
         public void start(Stage primaryStage) {
             // Inizializza il Controller e avvia il flusso del gioco
             GameController gameController = new GameController(primaryStage);
-            gameController.avviaGioco();
+            gameController.startGame();
         }
 
         public static void main(String[] args) {

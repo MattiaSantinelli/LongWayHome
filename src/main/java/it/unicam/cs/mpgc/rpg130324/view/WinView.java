@@ -19,23 +19,23 @@ import java.util.Objects;
 public class WinView {
 
     private final Stage stage;
-    private final String nomeGiocatore;
-    private final long tempoImpiegatoSecondi;
-    private final int nemiciSconfitti;
+    private final String namePlayer; // Campo per memorizzare il nome del giocatore
+    private final long timeElapsedSeconds;
+    private final int defeatedEnemies;
 
     // Bottoni dichiarati come campi della classe
-    private Button btnGiocaAncora;
-    private Button btnFine;
+    private Button playAgainBtn;
+    private Button endBtn;
 
-    public WinView(Stage stage, String nomeGiocatore, long tempoImpiegatoSecondi, int nemiciSconfitti) {
+    public WinView(Stage stage, String namePlayer, long timeElapsedSeconds, int defeatedEnemies) {
         this.stage = stage;
-        this.nomeGiocatore = nomeGiocatore;
-        this.tempoImpiegatoSecondi = tempoImpiegatoSecondi;
-        this.nemiciSconfitti = nemiciSconfitti;
-        inizializzaInterfaccia();
+        this.namePlayer = namePlayer;
+        this.timeElapsedSeconds = timeElapsedSeconds;
+        this.defeatedEnemies = defeatedEnemies;
+        initializeInterface();
     }
 
-    private void inizializzaInterfaccia() {
+    private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Vittoria!");
 
         // Contenitore di sfondo (posizionato a sinistra come nel banner dell'immagine)
@@ -77,7 +77,7 @@ public class WinView {
         titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 8, 0, 0, 0);");
 
         // Messaggio di congratulazioni
-        Label subtitleLabel = new Label("Congratulazioni " + nomeGiocatore + "!");
+        Label subtitleLabel = new Label("Congratulazioni " + namePlayer + "!");
         subtitleLabel.setFont(Font.font("Georgia", 14));
         subtitleLabel.setTextFill(Color.web("#E0E0E0"));
 
@@ -89,62 +89,62 @@ public class WinView {
         statsGrid.setStyle("-fx-padding: 15px 0px;");
 
         // Formattazione tempo MM:SS
-        long minuti = tempoImpiegatoSecondi / 60;
-        long secondi = tempoImpiegatoSecondi % 60;
-        String tempoFormattato = String.format("%02d:%02d", minuti, secondi);
+        long minutes = timeElapsedSeconds / 60;
+        long seconds = timeElapsedSeconds % 60;
+        String formattedTime = String.format("%02d:%02d", minutes, seconds);
 
-        // Riga 1: Tempo impiegato
-        Label lblTempoTitle = new Label("Tempo impiegato");
-        lblTempoTitle.setFont(Font.font("Georgia", 16));
-        lblTempoTitle.setTextFill(Color.web("#CCCCCC"));
+        // Tempo impiegato
+        Label lblTimeTitle = new Label("Tempo impiegato");
+        lblTimeTitle.setFont(Font.font("Georgia", 16));
+        lblTimeTitle.setTextFill(Color.web("#CCCCCC"));
 
-        Label lblTempoVal = new Label(tempoFormattato);
-        lblTempoVal.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
-        lblTempoVal.setTextFill(Color.WHITE);
+        Label lblTimeVal = new Label(formattedTime);
+        lblTimeVal.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+        lblTimeVal.setTextFill(Color.WHITE);
 
-        // Riga 2: Nemici sconfitti
-        Label lblNemiciTitle = new Label("Nemici sconfitti");
-        lblNemiciTitle.setFont(Font.font("Georgia", 16));
-        lblNemiciTitle.setTextFill(Color.web("#CCCCCC"));
+        // Nemici sconfitti
+        Label lblEnemyTitle = new Label("Nemici sconfitti");
+        lblEnemyTitle.setFont(Font.font("Georgia", 16));
+        lblEnemyTitle.setTextFill(Color.web("#CCCCCC"));
 
-        Label lblNemiciVal = new Label(String.valueOf(nemiciSconfitti));
-        lblNemiciVal.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
-        lblNemiciVal.setTextFill(Color.WHITE);
+        Label lblEnemyVal = new Label(String.valueOf(defeatedEnemies));
+        lblEnemyVal.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
+        lblEnemyVal.setTextFill(Color.WHITE);
 
         // Aggiunta alla griglia (Colonna, Riga)
-        statsGrid.add(lblTempoTitle, 0, 0);
-        statsGrid.add(lblTempoVal, 1, 0);
-        statsGrid.add(lblNemiciTitle, 0, 1);
-        statsGrid.add(lblNemiciVal, 1, 1);
+        statsGrid.add(lblTimeTitle, 0, 0);
+        statsGrid.add(lblTimeVal, 1, 0);
+        statsGrid.add(lblEnemyTitle, 0, 1);
+        statsGrid.add(lblEnemyVal, 1, 1);
 
         // PULSANTI
-        btnGiocaAncora = new Button("GIOCA ANCORA");
-        btnGiocaAncora.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
-        btnGiocaAncora.setPrefWidth(220);
+        playAgainBtn = new Button("GIOCA ANCORA");
+        playAgainBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
+        playAgainBtn.setPrefWidth(220);
 
         // Stili CSS base (Stato normale e hover)
-        String styleVerdeNormale = "-fx-background-color: #1b5e20; -fx-text-fill: white; -fx-border-color: #4caf50; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
-        String styleVerdeHover = "-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-border-color: #81c784; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(76, 175, 80, 0.6), 10, 0, 0, 0);";
+        String normalGreenStyle = "-fx-background-color: #1b5e20; -fx-text-fill: white; -fx-border-color: #4caf50; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
+        String hoverGreenStyle = "-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-border-color: #81c784; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(76, 175, 80, 0.6), 10, 0, 0, 0);";
 
-        btnGiocaAncora.setStyle(styleVerdeNormale);
-        btnGiocaAncora.setOnMouseEntered(e -> btnGiocaAncora.setStyle(styleVerdeHover));
-        btnGiocaAncora.setOnMouseExited(e -> btnGiocaAncora.setStyle(styleVerdeNormale));
+        playAgainBtn.setStyle(normalGreenStyle);
+        playAgainBtn.setOnMouseEntered(e -> playAgainBtn.setStyle(hoverGreenStyle));
+        playAgainBtn.setOnMouseExited(e -> playAgainBtn.setStyle(normalGreenStyle));
 
-        btnFine = new Button("FINE");
-        btnFine.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
-        btnFine.setPrefWidth(220);
+        endBtn = new Button("FINE");
+        endBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
+        endBtn.setPrefWidth(220);
 
         // Stili CSS base (Stato normale e hover)
-        String styleRossoNormale = "-fx-background-color: #b71c1c; -fx-text-fill: white; -fx-border-color: #f44336; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
-        String styleRossoHover = "-fx-background-color: #c62828; -fx-text-fill: white; -fx-border-color: #ef5350; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(244, 67, 54, 0.6), 10, 0, 0, 0);";
+        String normalRedStyle = "-fx-background-color: #b71c1c; -fx-text-fill: white; -fx-border-color: #f44336; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
+        String hoverRedStyle = "-fx-background-color: #c62828; -fx-text-fill: white; -fx-border-color: #ef5350; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(244, 67, 54, 0.6), 10, 0, 0, 0);";
 
-        btnFine.setStyle(styleRossoNormale);
-        btnFine.setOnMouseEntered(e -> btnFine.setStyle(styleRossoHover));
-        btnFine.setOnMouseExited(e -> btnFine.setStyle(styleRossoNormale));
+        endBtn.setStyle(normalRedStyle);
+        endBtn.setOnMouseEntered(e -> endBtn.setStyle(hoverRedStyle));
+        endBtn.setOnMouseExited(e -> endBtn.setStyle(normalRedStyle));
 
         VBox buttonBox = new VBox(12);
         buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.getChildren().addAll(btnGiocaAncora, btnFine);
+        buttonBox.getChildren().addAll(playAgainBtn, endBtn);
 
         // Inserimento elementi nel banner
         bannerBox.getChildren().addAll(titleLabel, subtitleLabel, statsGrid, buttonBox);
@@ -160,18 +160,18 @@ public class WinView {
     /***
      * Permette al Controller di definire la logica di riavvio del gioco.
      */
-    public void setOnGiocaAncoraListener(Runnable azione) {
-        btnGiocaAncora.setOnAction(e -> azione.run());
+    public void setOnPlayAgainListener(Runnable action) {
+        playAgainBtn.setOnAction(e -> action.run());
     }
 
     /**
      * Consente al Controller di definire l'azione di chiusura dell'applicazione.
      */
-    public void setOnFineListener(Runnable azione) {
-        btnFine.setOnAction(e -> azione.run());
+    public void setOnEndListener(Runnable action) {
+        endBtn.setOnAction(e -> action.run());
     }
 
-    public void mostra() {
+    public void show() {
         stage.show();
     }
 }
