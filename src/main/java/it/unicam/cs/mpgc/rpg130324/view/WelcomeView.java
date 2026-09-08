@@ -31,12 +31,15 @@ public class WelcomeView {
         initializeInterface();
     }
 
+    /**
+     * Inizializza la struttura del layout JavaFx (sfondo, top bar, etichette, bottoni)
+     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Benvenuto");
 
         BorderPane mainLayout = new BorderPane();
 
-        // --- Gestione Sfondo su Layout Principale (Immagine con Fallback su Gradiente) ---
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
@@ -52,25 +55,25 @@ public class WelcomeView {
             mainLayout.setStyle("-fx-background: linear-gradient(to bottom, #2B0B00, #120300);");
         }
 
-        // Aggiunta della barra superiore integrata (Classifica, Aiuto)
+        // Bottoni top bar
         HBox topBar = createButtonBar();
         mainLayout.setTop(topBar);
 
         VBox root = new VBox(25);
         root.setAlignment(Pos.CENTER);
 
-        // TITOLO GIOCO (Giallo con Glow Rosso)
+        // Titolo gioco
         Label labelTitle = new Label("LONG WAY HOME");
         labelTitle.setFont(Font.font("Georgia", FontWeight.BOLD, 52));
         labelTitle.setTextFill(Color.web("#FFC107"));
         labelTitle.setStyle("-fx-effect: dropshadow(three-pass-box, #D32F2F, 15, 0.5, 0, 0);");
 
-        // ISTRUZIONI (Arancione Chiaro)
+        // Istruzioni
         Label instructionLabel = new Label("Inserisci il tuo nome per iniziare l'avventura");
         instructionLabel.setFont(Font.font("Georgia", FontWeight.NORMAL, 18));
         instructionLabel.setTextFill(Color.web("#FFB74D"));
 
-        // CAMPO DI TESTO
+        // Campo di testo
         nameField = new TextField();
         nameField.setMaxWidth(320);
         nameField.setPrefHeight(45);
@@ -85,7 +88,7 @@ public class WelcomeView {
                         "-fx-background-radius: 5px;"
         );
 
-        // BOTTONE INIZIA (Stile Glow & Bordo Dorato)
+        // Bottone INIZIA
         startButton = new Button("INIZIA");
         startButton.setPrefSize(180, 50);
         startButton.setFont(Font.font("Georgia", FontWeight.BOLD, 20));
@@ -128,9 +131,7 @@ public class WelcomeView {
             infoHelp.setContentText("Raggiungi la casa in fondo al percorso per vincere la partita!");
             infoHelp.showAndWait();
         });
-
         bar.getChildren().addAll(leaderboardButton, btnHelp);
-
         return bar;
     }
 
@@ -209,6 +210,7 @@ public class WelcomeView {
         );
     }
 
+    // METODI PER IL CONTROLLER
     /**
      * Collega l'azione del pulsante Classifica alla logica del Controller.
      */

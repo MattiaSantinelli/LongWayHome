@@ -1,7 +1,8 @@
 package it.unicam.cs.mpgc.rpg130324.model.entity;
 
 public abstract class Character {
-    private String name;
+
+    private final String name;
     private int currentHp;
     private int maxHp;
     private int attackPower;
@@ -13,25 +14,25 @@ public abstract class Character {
         this.attackPower = attackPower;
     }
 
+    /**
+     * Riduce i punti vita dei personaggi in base ai danni subiti.
+     */
     public void takeDamage(int damage){
         this.currentHp = Math.max(0, this.currentHp - damage);
     }
 
-    public boolean isAlive(){
-        return this.currentHp > 0;
-    }
-
+    /**
+     * Metodo per il potenziamento dei punti vita/danno dei personaggi.
+     */
     public void isBuffed(int hpBoost, int attackBoost){
         this.maxHp += hpBoost;
         this.currentHp += hpBoost;
         this.attackPower += attackBoost;
     }
+
     // Metodi getters
     public String getName(){ return name; }
     public int getCurrentHp(){ return currentHp; }
     public int getMaxHp(){ return maxHp; }
     public int getAttackPower(){ return attackPower; }
-
-    // Metodi setters
-    public void setCurrentHp(int currentHp){ this.currentHp = currentHp; }
 }

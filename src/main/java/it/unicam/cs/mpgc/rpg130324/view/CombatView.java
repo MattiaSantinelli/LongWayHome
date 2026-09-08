@@ -55,7 +55,7 @@ public class CombatView {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(15, 30, 15, 30));
 
-        // --- SFONDO DI GIOCO ---
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
@@ -67,7 +67,7 @@ public class CombatView {
             root.setStyle("-fx-background-color: #120300;");
         }
 
-        // --- TITOLO IN ALTO AL CENTRO ---
+        // Titolo in alto al centro
         Label labelTitle = new Label("COMBATTIMENTO!");
         labelTitle.setFont(Font.font("Georgia", FontWeight.BOLD, 32));
         labelTitle.setTextFill(Color.web("#FF5722"));
@@ -77,7 +77,7 @@ public class CombatView {
         BorderPane.setAlignment(labelTitle, Pos.CENTER);
         root.setTop(labelTitle);
 
-        // --- CONTENITORE CENTRALE: EROE VS NEMICO ---
+        // Contenitore centrale: Eroe VS Nemico
         HBox combatBox = new HBox(40);
         combatBox.setAlignment(Pos.CENTER);
 
@@ -100,7 +100,7 @@ public class CombatView {
         combatBox.getChildren().addAll(heroBox, vsLabel, enemyBox);
         root.setCenter(combatBox);
 
-        // --- SEZIONE BOTTONI AZIONE ---
+        // Sezione bottoni azione
         HBox buttonBox = new HBox(30);
         buttonBox.setAlignment(Pos.CENTER);
         BorderPane.setMargin(buttonBox, new Insets(0, 0, 70, 0));
@@ -230,7 +230,9 @@ public class CombatView {
         return btn;
     }
 
-    // --- METODO DI AGGIORNAMENTO GRAFICO ---
+    /**
+     * Metodo di aggiornamento dell'interfaccia.
+     */
     public void updateUI() {
         heroHpBar.setProgress((double) hero.getCurrentHp() / hero.getMaxHp());
         heroHpLabel.setText(hero.getCurrentHp() + " / " + hero.getMaxHp() + " HP");
@@ -239,11 +241,17 @@ public class CombatView {
         enemyHpLabel.setText(enemy.getCurrentHp() + " / " + enemy.getMaxHp() + " HP");
     }
 
-    // --- METODI PER IL CONTROLLER ---
+    // METODI PER IL CONTROLLER
+    /**
+     * Permette al Controller di definire la logica di attacco nel combattimento del gioco.
+     */
     public void setOnAttackListener(Runnable action) {
         this.attackBtn.setOnAction(e -> action.run());
     }
 
+    /**
+     * Permette al Controller di definire la logica di difesa nel combattimento del gioco.
+     */
     public void setOnDefendListener(Runnable action) {
         defendBtn.setOnAction(e -> action.run());
     }

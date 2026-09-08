@@ -19,7 +19,7 @@ import java.util.Objects;
 public class WinView {
 
     private final Stage stage;
-    private final String namePlayer; // Campo per memorizzare il nome del giocatore
+    private final String namePlayer;
     private final long timeElapsedSeconds;
     private final int defeatedEnemies;
 
@@ -35,13 +35,17 @@ public class WinView {
         initializeInterface();
     }
 
+    /**
+     * Inizializza la struttura del layout JavaFx (sfondo, titolo, banner, etichette)
+     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Vittoria!");
 
-        // Contenitore di sfondo (posizionato a sinistra come nel banner dell'immagine)
+        // Contenitore di sfondo
         StackPane rootPane = new StackPane();
         rootPane.setAlignment(Pos.CENTER_LEFT);
 
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WinView_background.png")));
             rootPane.setBackground(new Background(new BackgroundImage(
@@ -55,7 +59,7 @@ public class WinView {
             rootPane.setStyle("-fx-background-color: #120300;");
         }
 
-        // BANNER PRINCIPALE (Riquadro Scuro con bordo dorato)
+        // Banner principale
         VBox bannerBox = new VBox(20);
         bannerBox.setAlignment(Pos.CENTER);
         bannerBox.setMaxWidth(320);
@@ -81,7 +85,7 @@ public class WinView {
         subtitleLabel.setFont(Font.font("Georgia", 14));
         subtitleLabel.setTextFill(Color.web("#E0E0E0"));
 
-        // TABELLA STATISTICHE (GridPane)
+        // Tabella statistiche
         GridPane statsGrid = new GridPane();
         statsGrid.setHgap(40);
         statsGrid.setVgap(15);
@@ -111,18 +115,18 @@ public class WinView {
         lblEnemyVal.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
         lblEnemyVal.setTextFill(Color.WHITE);
 
-        // Aggiunta alla griglia (Colonna, Riga)
+        // Aggiunta alla griglia
         statsGrid.add(lblTimeTitle, 0, 0);
         statsGrid.add(lblTimeVal, 1, 0);
         statsGrid.add(lblEnemyTitle, 0, 1);
         statsGrid.add(lblEnemyVal, 1, 1);
 
-        // PULSANTI
+        // Bottoni
         playAgainBtn = new Button("GIOCA ANCORA");
         playAgainBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
         playAgainBtn.setPrefWidth(220);
 
-        // Stili CSS base (Stato normale e hover)
+        // Stili CSS base (normale e hover)
         String normalGreenStyle = "-fx-background-color: #1b5e20; -fx-text-fill: white; -fx-border-color: #4caf50; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
         String hoverGreenStyle = "-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-border-color: #81c784; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(76, 175, 80, 0.6), 10, 0, 0, 0);";
 
@@ -134,7 +138,7 @@ public class WinView {
         endBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
         endBtn.setPrefWidth(220);
 
-        // Stili CSS base (Stato normale e hover)
+        // Stili CSS base (normale e hover)
         String normalRedStyle = "-fx-background-color: #b71c1c; -fx-text-fill: white; -fx-border-color: #f44336; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
         String hoverRedStyle = "-fx-background-color: #c62828; -fx-text-fill: white; -fx-border-color: #ef5350; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(244, 67, 54, 0.6), 10, 0, 0, 0);";
 
@@ -157,6 +161,7 @@ public class WinView {
         stage.setScene(scene);
     }
 
+    // METODI PER IL CONTROLLER
     /***
      * Permette al Controller di definire la logica di riavvio del gioco.
      */

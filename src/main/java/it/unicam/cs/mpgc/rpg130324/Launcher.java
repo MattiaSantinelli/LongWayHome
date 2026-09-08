@@ -10,7 +10,7 @@ public class Launcher {
         App.main(args);
     }
 
-    // Deve essere public e static per permettere a JavaFX di istanziarla!
+    // Deve essere public e static per permettere a JavaFX di istanziarla
     public static class App extends Application {
 
         public App() {

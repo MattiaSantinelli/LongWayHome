@@ -19,7 +19,7 @@ public class SaveManager {
     // Nome del file JSON dove verranno salvati i dati
     private static final String SAVE_FILE_PATH = "salvataggio.json";
 
-    // Istanza di Gson configurata per formattare il JSON in modo leggibile (Pretty Printing)
+    // Istanza di Gson configurata per formattare il JSON in modo leggibile
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     /**
@@ -43,7 +43,7 @@ public class SaveManager {
         //   - Prima per nemici sconfitti (dal più alto al più basso)
         //   - A parità di nemici, per tempo trascorso (dal più breve al più lungo)
         saveDataList.sort(Comparator
-                .comparingInt(SaveData::getdefeatedEnemies).reversed()
+                .comparingInt(SaveData::getDefeatedEnemies).reversed()
                 .thenComparingLong(SaveData::getGameTime));
 
         // Scrive l'intera lista aggiornata sul file JSON
@@ -64,13 +64,13 @@ public class SaveManager {
     public static List<SaveData> loadAllSaves() {
         File file = new File(SAVE_FILE_PATH);
 
-        // Se il file non esiste ancora (es. prima partita in assoluto), restituisce una lista vuota
+        // Se il file non esiste ancora, restituisce una lista vuota
         if (!file.exists()) {
             return new ArrayList<>();
         }
 
         try (Reader reader = new FileReader(file)) {
-            // Utilizziamo TypeToken per gestire la deserializzazione di un tipo generico (List<DatiSalvataggio>)
+            // Utilizziamo TypeToken per gestire la deserializzazione di un tipo generico
             Type listType = new TypeToken<ArrayList<SaveData>>() {}.getType();
             List<SaveData> list = gson.fromJson(reader, listType);
 

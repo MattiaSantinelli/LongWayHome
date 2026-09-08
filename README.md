@@ -33,7 +33,7 @@ frecce direzionali o WASD.
 ---
 -  **Java 25** (LTS)
 -  **JavaFX** (UI, Layouts, CSS, Timelines)
--  **Json** (Serializzazione e deserializzazione JSON)
+-  **Gson** (Serializzazione e deserializzazione JSON)
 -  **Maven/Gradle** (Gestione delle dipendenze e build)
 
 ## 🚀 Come eseguire il progetto

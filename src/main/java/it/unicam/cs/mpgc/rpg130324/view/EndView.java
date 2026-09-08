@@ -35,13 +35,16 @@ public class EndView {
         initializeInterface();
     }
 
+    /**
+     *  Inizializza la struttura del layout JavaFx (sfondo, etichette, bottoni)
+     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Game Over");
 
         VBox root = new VBox(25);
         root.setAlignment(Pos.CENTER);
 
-        // Sfondo solito con fallback di colore
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
@@ -62,7 +65,7 @@ public class EndView {
         titleLabel.setTextFill(Color.web("#D32F2F")); // Rosso scuro
         titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
 
-        // Nome Giocatore
+        // Nome giocatore
         Label playerLabel = new Label("Sei stato sconfitto, " + namePlayer + "!");
         playerLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
         playerLabel.setTextFill(Color.web("#FFB74D"));
@@ -92,7 +95,7 @@ public class EndView {
         playAgainBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
         playAgainBtn.setPrefWidth(190);
 
-        // Stili CSS base (Stato normale e hover)
+        // Stili CSS base (normale e hover)
         String normalGreenStyle = "-fx-background-color: #1b5e20; -fx-text-fill: white; -fx-border-color: #4caf50; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
         String hoverGreenStyle = "-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-border-color: #81c784; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(76, 175, 80, 0.6), 10, 0, 0, 0);";
 
@@ -104,7 +107,7 @@ public class EndView {
         endBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
         endBtn.setPrefWidth(190);
 
-        // Stili CSS base (Stato normale e hover)
+        // Stili CSS base (normale e hover)
         String normaleRedStyle = "-fx-background-color: #b71c1c; -fx-text-fill: white; -fx-border-color: #f44336; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
         String hoverRedStyle = "-fx-background-color: #c62828; -fx-text-fill: white; -fx-border-color: #ef5350; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(244, 67, 54, 0.6), 10, 0, 0, 0);";
 
@@ -122,6 +125,7 @@ public class EndView {
         stage.setScene(scene);
     }
 
+    // METODI PER IL CONTROLLER
     /***
      * Permette al Controller di definire la logica di riavvio del gioco.
      */

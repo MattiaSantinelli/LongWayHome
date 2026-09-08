@@ -46,11 +46,58 @@ public class GameController {
     }
 
     /**
+     * Popola la matrice logica con le stringhe corrispondenti alle posizioni
+     * iniziali dei personaggi e della casa di arrivo.
+     */
+    private void initializeGameMap() {
+        // Pulizia preliminare della matrice
+        for (int r = 0; r < 10; r++) {
+            for (int c = 0; c < 10; c++) {
+                gameMap[r][c] = "";
+            }
+        }
+
+        // Posizioni fisse prescritte
+        gameMap[0][0] = "Eroe";
+        gameMap[9][9] = "Casa";
+        gameMap[8][8] = "Mago";
+        gameMap[8][9] = "Drago";
+        gameMap[9][8] = "Drago";
+
+        // Preparazione del pool totale contenente sia i 32 nemici che le 64 celle vuote
+        List<String> elementPool = new ArrayList<>();
+
+        for (int i = 0; i < 9; i++) elementPool.add("Goblin");
+        for (int i = 0; i < 9; i++) elementPool.add("Gigante");
+        for (int i = 0; i < 7; i++) elementPool.add("Strega");
+        for (int i = 0; i < 7; i++) elementPool.add("Mago");
+
+        // Aggiunta delle 64 celle vuote
+        for (int i = 0; i < 64; i++) {
+            elementPool.add("");
+        }
+
+        // Mescolamento casuale dell'interno pool di 96 elementi
+        Collections.shuffle(elementPool);
+
+        // Assegnazione degli elementi rimescolati alle celle disponibili
+        int indexPool = 0;
+        for (int r = 0; r < 10; r++) {
+            for (int c = 0; c < 10; c++) {
+                // Se la cella non è occupata dai ruoli fissi
+                if (gameMap[r][c].isEmpty()) {
+                    gameMap[r][c] = elementPool.get(indexPool);
+                    indexPool++;
+                }
+            }
+        }
+    }
+
+    /**
      * Avvia l'applicazione mostrando la prima schermata (WelcomeView).
      */
     public void startGame() {
         WelcomeView welcomeView = new WelcomeView(stage);
-
         // Il controller ascolta l'evento del pulsante classifica
         welcomeView.setOnLeaderboardListener(() -> {
             Scene initialScene = stage.getScene();
@@ -79,9 +126,9 @@ public class GameController {
             enemyBuffTimer.stop();
         }
         enemyBuffLevel = 0;
-
+        // Crea una TimeLine che esegue l'azione ogni 30 secondi
         enemyBuffTimer = new Timeline(new KeyFrame(Duration.seconds(30), event -> {
-            enemyBuffLevel++;
+            enemyBuffLevel++; // Incremento livello
         }));
         enemyBuffTimer.setCycleCount(Timeline.INDEFINITE);
         enemyBuffTimer.play();
@@ -91,6 +138,7 @@ public class GameController {
      * Calcola i secondi trascorsi dall'inizio della partita.
      */
     private long getElapsedTimeSeconds() {
+
         return (System.currentTimeMillis() - gameTime) / 1000;
     }
 
@@ -100,7 +148,9 @@ public class GameController {
     private void handleGameOver() {
         stopAllTimers();
         EndView endView = new EndView(stage, playerName, getElapsedTimeSeconds(), defeatedEnemies);
+        // Collegamento evento del pulsante al metodo restartGame()
         endView.setOnPlayAgainListener(this::restartGame);
+        // Collegamento evento del pulsante al metodo di chiusura
         endView.setOnEndListener(stage::close);
         endView.show();
     }
@@ -110,12 +160,12 @@ public class GameController {
      */
     private void handleVictory() {
         stopAllTimers();
-
-        // Salva i dati su file JSON
+        // Salva i dati su file JSON (solo in caso di vittoria)
         SaveManager.salvaPartita(playerName, getElapsedTimeSeconds(), defeatedEnemies);
-
         WinView winView = new WinView(stage, playerName, getElapsedTimeSeconds(), defeatedEnemies);
+        // Collegamento evento del pulsante al metodo restartGame()
         winView.setOnPlayAgainListener(this::restartGame);
+        // Collegamento evento del pulsante al metodo di chiusura
         winView.setOnEndListener(stage::close);
         winView.show();
     }
@@ -146,6 +196,7 @@ public class GameController {
     private void showGameMap() {
         GameView gameView = new GameView(stage, playerName);
         gameView.enemyPosition(gameMap);
+        // Configura il listenere dei movimenti: intercetta la direzione dell'eroe
         gameView.setOnMoveListener(direction -> handleMovement(direction, gameView));
         gameView.show();
     }
@@ -224,12 +275,10 @@ public class GameController {
                     enemyAttackTimer.stop();
                 }
                 defeatedEnemies++;
-
-                // POTENZIAMENTO EROE: Ogni 3 nemici sconfitti
+                // Potenziamento eroe ogni 3 nemici sconfitti
                 if (defeatedEnemies % 3 == 0) {
                     hero.isBuffed(20, 5); // +20 HP Massimi, +5 Attacco
                 }
-
                 showGameMap();
             }
         });
@@ -253,85 +302,46 @@ public class GameController {
         }));
         enemyAttackTimer.setCycleCount(Timeline.INDEFINITE);
         enemyAttackTimer.play();
-
         combatView.show();
     }
 
+    /**
+     * Inizializza e avvia la fase di combattimento specifica con il Goblin.
+     */
     private void startGoblinCombat() {
         Enemy goblin = new Enemy("Goblin", 50, 10);
         startCombat(goblin, "/imgGoblin.png", 1.0);
     }
 
+    /**
+     * Inizializza e avvia la fase di combattimento specifica contro il Gigante.
+     */
     private void startGiantCombat() {
         Enemy gigante = new Enemy("Gigante", 120, 20);
         startCombat(gigante, "/imgGigante.png", 1.0);
     }
 
+    /**
+     * Inizializza e avvia la fase di combattimento specifica contro la Strega.
+     */
     private void startWitchCombat() {
         Enemy strega = new Enemy("Strega", 80, 30);
         startCombat(strega, "/imgStrega.png", 1.0);
     }
 
+    /**
+     * Inizializza e avvia la fase di combattimento specifica contro il Mago.
+     */
     private void startWizardCombat() {
         Enemy mago = new Enemy("Mago", 80, 30);
         startCombat(mago, "/imgMago.png", 1.0);
     }
 
+    /**
+     * Inizializza e avvia la fase di combattimento specifica contro il Drago.
+     */
     private void startDragonCombat() {
         Enemy drago = new Enemy("Drago", 200, 40);
         startCombat(drago, "/imgDrago.png", 0.5);
-    }
-
-
-    /**
-     * Popola la matrice logica con le stringhe corrispondenti alle posizioni
-     * iniziali dei personaggi e della casa di arrivo.
-     */
-    private void initializeGameMap() {
-        // Pulizia preliminare della matrice
-        for (int r = 0; r < 10; r++) {
-            for (int c = 0; c < 10; c++) {
-                gameMap[r][c] = "";
-            }
-        }
-
-        // Posizioni fisse prescritte
-        gameMap[0][0] = "Eroe";
-        gameMap[9][9] = "Casa";
-        gameMap[8][8] = "Mago";
-        gameMap[8][9] = "Drago";
-        gameMap[9][8] = "Drago";
-
-        // Preparazione del pool totale contenente sia i 32 nemici che le 64 celle vuote
-        List<String> elementPool = new ArrayList<>();
-
-        for (int i = 0; i < 9; i++) elementPool.add("Goblin");
-        for (int i = 0; i < 9; i++) elementPool.add("Gigante");
-        for (int i = 0; i < 7; i++) elementPool.add("Strega");
-        for (int i = 0; i < 7; i++) elementPool.add("Mago");
-
-        // Aggiunta delle 64 celle vuote
-        for (int i = 0; i < 64; i++) {
-            elementPool.add("");
-        }
-
-        // Mescolamento casuale dell'interno pool di 96 elementi
-        Collections.shuffle(elementPool);
-
-        // Assegnazione degli elementi rimescolati alle celle disponibili
-        int indexPool = 0;
-        for (int r = 0; r < 10; r++) {
-            for (int c = 0; c < 10; c++) {
-                // Se la cella non è occupata dai ruoli fissi
-                if (gameMap[r][c].isEmpty()) {
-                    gameMap[r][c] = elementPool.get(indexPool);
-                    indexPool++;
-                }
-            }
-        }
-    }
-
-    public String getPlayerName() {
-        return playerName;
     }
 }

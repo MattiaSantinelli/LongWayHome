@@ -23,12 +23,14 @@ public class LeaderboardView {
     public LeaderboardView(List<SaveData> dataList, Runnable backAction) {
         this.mainLayout = new BorderPane();
         this.backBtn = new Button("INDIETRO");
-
         initializeInterface(dataList, backAction);
     }
 
+    /**
+     * Inizializza la struttura del layout JavaFx (sfondo, titolo, lista, scroll pane, bottone)
+     */
     private void initializeInterface(List<SaveData> list, Runnable backAction) {
-        // --- Gestione Sfondo ---
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
@@ -44,13 +46,13 @@ public class LeaderboardView {
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-padding: 30px;");
 
-        // TITOLO SCHERMATA
+        // Titolo schermata
         Label titleLabel = new Label("🏆 CLASSIFICA GIOCATORI");
         titleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 42));
         titleLabel.setTextFill(Color.web("#FFC107"));
         titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, #D32F2F, 15, 0.5, 0, 0);");
 
-        // CONTENITORE LISTA SALVATAGGI
+        // Contenitore lista salvataggi
         VBox contentList = new VBox(12);
         contentList.setAlignment(Pos.TOP_CENTER);
         contentList.setStyle("-fx-padding: 10px;");
@@ -64,7 +66,7 @@ public class LeaderboardView {
             int posizione = 1;
             for (SaveData dati : list) {
                 String testo = String.format("%d. %s  —  Nemici sconfitti: %d  |  Tempo: %ds",
-                        posizione++, dati.getNamePlayer(), dati.getdefeatedEnemies(), dati.getGameTime());
+                        posizione++, dati.getNamePlayer(), dati.getDefeatedEnemies(), dati.getGameTime());
 
                 Label rigaLabel = new Label(testo);
                 rigaLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 15));
@@ -82,14 +84,14 @@ public class LeaderboardView {
             }
         }
 
-        // SCROLL PANE PER LA LISTA
+        // Scroll pane per la lista
         ScrollPane scrollPane = new ScrollPane(contentList);
         scrollPane.setFitToWidth(true);
         scrollPane.setMaxWidth(650);
         scrollPane.setMaxHeight(340);
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-padding: 0;");
 
-        // CSS SCROLLBAR DARK/RPG
+        // CSS scrollbar
         String cssScrollbar =
                 ".scroll-bar:vertical { -fx-background-color: rgba(20, 10, 5, 0.5); -fx-pref-width: 10px; -fx-background-radius: 5px; } " +
                         ".scroll-bar:vertical .thumb { -fx-background-color: #E65100; -fx-background-radius: 5px; } " +
@@ -100,7 +102,7 @@ public class LeaderboardView {
 
         mainLayout.getStylesheets().add("data:text/css," + cssScrollbar.replaceAll("\n", ""));
 
-        // BOTTONE INDIETRO
+        // Bottone INDIETRO
         backBtn.setPrefSize(160, 45);
         backBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
         applyDefaultStyle(backBtn);
@@ -113,14 +115,23 @@ public class LeaderboardView {
         mainLayout.setCenter(root);
     }
 
+    /**
+     * Crea e restituisce una nuova scena (800x600).
+     */
     public Scene getScene() {
         return new Scene(mainLayout, 800, 600);
     }
 
+    /**
+     * Applica lo stile di default del bottone.
+     */
     private void applyDefaultStyle(Button btn) {
         btn.setStyle("-fx-background-color: linear-gradient(to bottom, #E64A19, #BF360C); -fx-border-color: #FFC107; -fx-border-width: 2px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-text-fill: #FFD54F; -fx-effect: dropshadow(three-pass-box, #FF5722, 10, 0.4, 0, 0); -fx-cursor: hand;");
     }
 
+    /**
+     * Applica lo stile del bottone quando ci si va sopra con il mouse.
+     */
     private void applyHoverStyle(Button btn) {
         btn.setStyle("-fx-background-color: linear-gradient(to bottom, #FF5722, #D32F2F); -fx-border-color: #FFE082; -fx-border-width: 2px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-text-fill: #FFFFFF; -fx-effect: dropshadow(three-pass-box, #FF9800, 18, 0.7, 0, 0); -fx-cursor: hand;");
     }

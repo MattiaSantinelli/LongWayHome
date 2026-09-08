@@ -53,7 +53,7 @@ public class GameView {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
 
-        // Sfondo con fallback
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
@@ -136,13 +136,6 @@ public class GameView {
     }
 
     /**
-     * Permette al Controller di registrare una funzione di callback per il movimento.
-     */
-    public void setOnMoveListener(Consumer<String> listener) {
-        this.onMovimentoListener = listener;
-    }
-
-    /**
      * Pulisce e ridisegna la mappa intera partendo dalla matrice.
      */
     public void enemyPosition(String[][] mappaGioco) {
@@ -183,6 +176,14 @@ public class GameView {
         iv.setPreserveRatio(true);
         if (style != null) iv.setStyle(style);
         gridCells[row][column].getChildren().add(iv);
+    }
+
+    // METODI PER IL CONTROLLER
+    /**
+     * Permette al Controller di registrare una funzione di callback per il movimento.
+     */
+    public void setOnMoveListener(Consumer<String> listener) {
+        this.onMovimentoListener = listener;
     }
 
     public void show() {
