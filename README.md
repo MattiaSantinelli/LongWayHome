@@ -16,16 +16,16 @@ Anno accademico: 2025/26 - Università di Camerino
 ## 🎮 Caratteristiche principali
 
 ---
-- ✅ Mappa esplorabile(10x10): generazione della mappa con posizionamento dinamico di nemici, ostacoli e obiettivo finale.
-- ✅ Sistema di combattimento in tempo reale: incontri a turni dinamici con timer automatici per l'attaccco nemico. 
+- ✅ **Mappa esplorabile(10x10):** generazione della mappa con posizionamento dinamico di nemici, ostacoli e obiettivo finale.
+- ✅ **Sistema di combattimento in tempo reale:** incontri a turni dinamici con timer automatici per l'attaccco nemico. 
 Opzioni di attacco, difesa per il giocatore.
-- ✅ Aumento di difficoltà dinamico: i nemici diventano più forti ogni 30 secondi di gioco trascorsi.
-- ✅ Progressione eroe: l'eroe guadagna statistiche extra (HP e attacco) ogni 3 nemici sconfitti.
-- ✅ Classifica e Persistenza JSON: salvataggio automatico solo in caso di vittoria. La classifica ordina i giocatori 
+- ✅ **Aumento di difficoltà dinamico:** i nemici diventano più forti ogni 30 secondi di gioco trascorsi.
+- ✅ **Progressione eroe:** l'eroe guadagna statistiche extra (HP e attacco) ogni 3 nemici sconfitti.
+- ✅ **Classifica e Persistenza JSON:** salvataggio automatico solo in caso di vittoria. La classifica ordina i giocatori 
 in base ai nemici sconfitti (decrescente) e al tempo impiegato (crescente).
-- ✅ Interfaccia grafica: styling personalizzato tramite CSS JavaFX con temi scuri/fantasy, animazioni ed effetti glow.
-- 5 tipi di nemici
-- ✅ Controlli per movimento(WASD/frecce): controlli per curare il movimento dell'eroe protagonista all'interno del gioco,
+- ✅ **Interfaccia grafica:** styling personalizzato tramite CSS JavaFX con temi scuri/fantasy, animazioni ed effetti glow.
+- ✅ **5 tipi di nemici:** differenziazione dei nemici con caratteristiche diverse divise in 5 tipologie differenti.
+- ✅ **Controlli per movimento(WASD/frecce):** controlli per curare il movimento dell'eroe protagonista all'interno del gioco,
 frecce direzionali o WASD.
 
 ## 🛠️ Tecnologie utilizzate
@@ -59,8 +59,9 @@ cd LongWayHome
 ./gradlew run
 ```
 
----
 ## 🤖 Uso di strumenti di AI
+
+---
 
 ### 1 - ChatGPT (OpenAI) utilizzato per:
 
@@ -73,7 +74,7 @@ cd LongWayHome
     -Autocomletamento di metodi ripetitivi
     -Generazione rapida di codice
 
-### 3 - Gemini:
+### 3 - Gemini (Google) utilizzato per:
 
     -Chiarire errori di compilazione (classi mancanti, import)
     -Suggerimenti su struttura del codice e organizzazione delle classi
@@ -89,6 +90,6 @@ Progetto universitario sviluppato per l'esame di Programmazione Avanzata / Model
 ---
 
 
-📌 Per una descrizione più dettagliata dell’uso dell’AI, utilizzare la [Wiki del repository](https://github.com/MattiaSantinelli/LongWayHome/wiki/git).
+📌 Per una descrizione più dettagliata dell’uso dell’AI, utilizzare la [Wiki del repository](https://github.com/MattiaSantinelli/LongWayHome/wiki/Dichiarazione-Uso-AI).
 
 
