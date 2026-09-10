@@ -23,7 +23,6 @@ public class EndView {
     private final long timeElapsedSeconds;
     private final int defeatedEnemies;
 
-    // Bottoni dichiarati come campi della classe
     private Button playAgainBtn;
     private Button endBtn;
 
@@ -35,16 +34,12 @@ public class EndView {
         initializeInterface();
     }
 
-    /**
-     *  Inizializza la struttura del layout JavaFx (sfondo, etichette, bottoni)
-     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Game Over");
 
         VBox root = new VBox(25);
         root.setAlignment(Pos.CENTER);
 
-        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
@@ -59,18 +54,15 @@ public class EndView {
         }
         root.setStyle(root.getStyle() + " -fx-padding: 30px;");
 
-        // Titolo GAME OVER
         Label titleLabel = new Label("GAME OVER");
         titleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 48));
-        titleLabel.setTextFill(Color.web("#D32F2F")); // Rosso scuro
+        titleLabel.setTextFill(Color.web("#D32F2F"));
         titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
 
-        // Nome giocatore
         Label playerLabel = new Label("Sei stato sconfitto, " + namePlayer + "!");
         playerLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
         playerLabel.setTextFill(Color.web("#FFB74D"));
 
-        // Riquadro con le statistiche
         VBox statsBox = new VBox(10);
         statsBox.setAlignment(Pos.CENTER);
         statsBox.setMaxWidth(400);
@@ -90,30 +82,13 @@ public class EndView {
 
         statsBox.getChildren().addAll(timeLabel, enemyLabel);
 
-        // Bottoni
         playAgainBtn = new Button("GIOCA ANCORA");
-        playAgainBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
+        playAgainBtn.getStyleClass().add("btn-success");
         playAgainBtn.setPrefWidth(190);
 
-        // Stili CSS base (normale e hover)
-        String normalGreenStyle = "-fx-background-color: #1b5e20; -fx-text-fill: white; -fx-border-color: #4caf50; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
-        String hoverGreenStyle = "-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-border-color: #81c784; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(76, 175, 80, 0.6), 10, 0, 0, 0);";
-
-        playAgainBtn.setStyle(normalGreenStyle);
-        playAgainBtn.setOnMouseEntered(e -> playAgainBtn.setStyle(hoverGreenStyle));
-        playAgainBtn.setOnMouseExited(e -> playAgainBtn.setStyle(normalGreenStyle));
-
         endBtn = new Button("FINE");
-        endBtn.setFont(Font.font("Georgia", FontWeight.BOLD, 14));
+        endBtn.getStyleClass().add("btn-danger");
         endBtn.setPrefWidth(190);
-
-        // Stili CSS base (normale e hover)
-        String normaleRedStyle = "-fx-background-color: #b71c1c; -fx-text-fill: white; -fx-border-color: #f44336; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand;";
-        String hoverRedStyle = "-fx-background-color: #c62828; -fx-text-fill: white; -fx-border-color: #ef5350; -fx-border-width: 2px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(244, 67, 54, 0.6), 10, 0, 0, 0);";
-
-        endBtn.setStyle(normaleRedStyle);
-        endBtn.setOnMouseEntered(e -> endBtn.setStyle(hoverRedStyle));
-        endBtn.setOnMouseExited(e -> endBtn.setStyle(normaleRedStyle));
 
         HBox buttonBox = new HBox(20);
         buttonBox.setAlignment(Pos.CENTER);
@@ -122,20 +97,14 @@ public class EndView {
         root.getChildren().addAll(titleLabel, playerLabel, statsBox, buttonBox);
 
         Scene scene = new Scene(root, 800, 650);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/style.css")).toExternalForm());
         stage.setScene(scene);
     }
 
-    // METODI PER IL CONTROLLER
-    /***
-     * Permette al Controller di definire la logica di riavvio del gioco.
-     */
     public void setOnPlayAgainListener(Runnable action) {
         playAgainBtn.setOnAction(e -> action.run());
     }
 
-    /**
-     * Consente al Controller di definire l'azione di chiusura dell'applicazione.
-     */
     public void setOnEndListener(Runnable action) {
         endBtn.setOnAction(e -> action.run());
     }
