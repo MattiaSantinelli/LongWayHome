@@ -1,11 +1,13 @@
 package it.unicam.cs.mpgc.rpg130324.controller;
 
 import it.unicam.cs.mpgc.rpg130324.model.GameMap;
+import it.unicam.cs.mpgc.rpg130324.model.entity.CellType;
 import it.unicam.cs.mpgc.rpg130324.model.entity.EnemyType;
 import it.unicam.cs.mpgc.rpg130324.model.entity.Hero;
 import it.unicam.cs.mpgc.rpg130324.model.persistence.SaveData;
 import it.unicam.cs.mpgc.rpg130324.model.persistence.SaveManager;
 import it.unicam.cs.mpgc.rpg130324.view.*;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
@@ -21,9 +23,6 @@ public class GameController {
 
     private Hero hero;
     private final GameMap gameMap;
-
-    private int heroRow = 0;
-    private int heroColumn = 0;
 
     private Timeline enemyBuffTimer;
     private int enemyBuffLevel = 0;
@@ -80,39 +79,23 @@ public class GameController {
     }
 
     private void handleMovement(String direction, GameView gameView) {
-        int newRow = heroRow;
-        int newColumn = heroColumn;
+        // La logica di verifica e spostamento è ora incapsulata in GameMap (Model)
+        CellType destination = gameMap.moveHero(direction);
 
-        switch (direction) {
-            case "SU" -> newRow--;
-            case "GIU" -> newRow++;
-            case "SINISTRA" -> newColumn--;
-            case "DESTRA" -> newColumn++;
+        if (destination == null) {
+            return; // Movimento non valido/muro
         }
-
-        if (!gameMap.isValidPosition(newRow, newColumn)) {
-            return;
-        }
-
-        String destination = gameMap.getCell(newRow, newColumn);
-
-        gameMap.setCell(heroRow, heroColumn, "");
-        this.heroRow = newRow;
-        this.heroColumn = newColumn;
-        gameMap.setCell(heroRow, heroColumn, "Eroe");
 
         gameView.enemyPosition(gameMap.getGrid());
 
-        if (destination != null && !destination.isEmpty() && !destination.equals("Eroe")) {
-            if (destination.equals("Casa")) {
-                handleVictory();
-                return;
-            }
+        if (destination == CellType.HOUSE) {
+            handleVictory();
+            return;
+        }
 
-            EnemyType enemyType = EnemyType.fromName(destination);
-            if (enemyType != null) {
-                startCombatSequence(enemyType);
-            }
+        EnemyType enemyType = EnemyType.fromName(destination.name());
+        if (enemyType != null) {
+            startCombatSequence(enemyType);
         }
     }
 
@@ -142,7 +125,7 @@ public class GameController {
 
     private void handleVictory() {
         stopAllTimers();
-        SaveManager.salvaPartita(playerName, getElapsedTimeSeconds(), defeatedEnemies);
+        SaveManager.saveGame(playerName, getElapsedTimeSeconds(), defeatedEnemies);
         WinView winView = new WinView(stage, playerName, getElapsedTimeSeconds(), defeatedEnemies);
         winView.setOnPlayAgainListener(this::restartGame);
         winView.setOnEndListener(stage::close);
@@ -156,9 +139,6 @@ public class GameController {
 
     private void restartGame() {
         this.defeatedEnemies = 0;
-        this.heroRow = 0;
-        this.heroColumn = 0;
-
         gameMap.initializeMap();
         startGame();
     }

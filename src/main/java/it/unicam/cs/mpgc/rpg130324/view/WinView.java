@@ -41,7 +41,7 @@ public class WinView {
         rootPane.setAlignment(Pos.CENTER_LEFT);
 
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WinView_background.png")));
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/WinView_background.png")));
             rootPane.setBackground(new Background(new BackgroundImage(
                     bgImage,
                     BackgroundRepeat.NO_REPEAT,

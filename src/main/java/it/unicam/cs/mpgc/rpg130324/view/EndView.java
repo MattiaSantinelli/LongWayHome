@@ -41,7 +41,7 @@ public class EndView {
         root.setAlignment(Pos.CENTER);
 
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
                     bgImage,
                     BackgroundRepeat.NO_REPEAT,

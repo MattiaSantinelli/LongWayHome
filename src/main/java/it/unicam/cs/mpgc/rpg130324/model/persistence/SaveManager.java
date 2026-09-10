@@ -25,7 +25,7 @@ public class SaveManager {
     /**
      * Salva i dati della partita corrente aggiungendoli a quelli esistenti.
      */
-    public static void salvaPartita(String namePlayer, long gameTime, int defeatedEnemies) {
+    public static void saveGame(String namePlayer, long gameTime, int defeatedEnemies) {
         // Carica i salvataggi già esistenti per non sovrascriverli
         List<SaveData> saveDataList = loadAllSaves();
 

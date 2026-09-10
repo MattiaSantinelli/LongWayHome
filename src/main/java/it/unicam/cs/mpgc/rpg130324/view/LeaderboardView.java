@@ -28,7 +28,7 @@ public class LeaderboardView {
 
     private void initializeInterface(List<SaveData> list, Runnable backAction) {
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WelcomeView_background.png")));
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
                     bgImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                     BackgroundPosition.CENTER, new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)

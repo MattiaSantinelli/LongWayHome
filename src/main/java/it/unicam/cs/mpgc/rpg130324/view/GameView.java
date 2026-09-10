@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg130324.view;
 
+import it.unicam.cs.mpgc.rpg130324.model.entity.CellType;
 import it.unicam.cs.mpgc.rpg130324.model.entity.EnemyType;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,6 +25,10 @@ public class GameView {
     private final int ROW = 10;
     private final int COLUMN = 10;
     private final String namePlayer;
+
+    // Costanti per gli effetti glow di Eroe e Casa (incapsulati nella View)
+    private static final String HERO_GLOW = "-fx-effect: dropshadow(three-pass-box, #FF5722, 10, 0.8, 0, 0);";
+    private static final String HOUSE_GLOW = "-fx-effect: dropshadow(three-pass-box, #C0C0C0, 10, 0.8, 0, 0);";
 
     // Matrice delle celle della griglia
     private final StackPane[][] gridCells = new StackPane[ROW][COLUMN];
@@ -50,7 +55,7 @@ public class GameView {
         root.setAlignment(Pos.CENTER);
 
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
                     bgImage,
                     BackgroundRepeat.NO_REPEAT,
@@ -111,14 +116,14 @@ public class GameView {
 
     private void loadImages() {
         try {
-            imageCache.put("Eroe", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png"))));
-            imageCache.put("Casa", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgCasa.png"))));
+            imageCache.put("HERO", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/imgEroe.png"))));
+            imageCache.put("HOUSE", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/imgCasa.png"))));
         } catch (Exception ignored) {}
 
         for (EnemyType enemy : EnemyType.values()) {
             try {
                 Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(enemy.getImagePath())));
-                imageCache.put(enemy.getName(), img);
+                imageCache.put(enemy.name(), img);
             } catch (Exception ignored) {}
         }
     }
@@ -136,42 +141,54 @@ public class GameView {
     }
 
     /**
-     * Ridisegna la mappa mantenendo GLI STESSI GLOW ORIGINALI ma senza lag.
+     * Ridisegna la mappa in modo ultra-fluido riutilizzando le immagini in memoria e applicando i glow.
      */
-    public void enemyPosition(String[][] mappaGioco) {
+    public void enemyPosition(CellType[][] grid) {
         for (int r = 0; r < ROW; r++) {
             for (int c = 0; c < COLUMN; c++) {
-                String elemento = mappaGioco[r][c];
+                CellType cell = grid[r][c];
                 ImageView iv = cellImageViews[r][c];
 
-                // Cella vuota: pulisce l'immagine e lo stile
-                if (elemento == null || elemento.isEmpty()) {
-                    iv.setImage(null);
-                    iv.setStyle("");
+                // 1. Cella vuota
+                if (cell == null || cell == CellType.EMPTY) {
+                    if (iv.getImage() != null) {
+                        iv.setImage(null);
+                        iv.setStyle("");
+                    }
                     continue;
                 }
 
-                EnemyType enemy = EnemyType.fromName(elemento);
+                // 2. Gestione dell'Eroe e della Casa (con glow azzurro e dorato)
+                if (cell == CellType.HERO) {
+                    Image heroImg = imageCache.get("HERO");
+                    if (iv.getImage() != heroImg) {
+                        iv.setImage(heroImg);
+                        iv.setStyle(HERO_GLOW);
+                    }
+                    continue;
+                }
+
+                if (cell == CellType.HOUSE) {
+                    Image houseImg = imageCache.get("HOUSE");
+                    if (iv.getImage() != houseImg) {
+                        iv.setImage(houseImg);
+                        iv.setStyle(HOUSE_GLOW);
+                    }
+                    continue;
+                }
+
+                // 3. Gestione dei Nemici tramite l'enum EnemyType
+                EnemyType enemy = EnemyType.fromName(cell.name());
 
                 if (enemy != null) {
-                    Image imgEnemy = imageCache.get(enemy.getName());
-                    if (imgEnemy != null) {
-                        iv.setImage(imgEnemy);
-                        // RIPRISTINATO IL TUO GLOW CSS ORIGINALE
-                        iv.setStyle("-fx-effect: dropshadow(three-pass-box, " + enemy.getGlowColor() + ", 12, 0.6, 0, 0);");
+                    Image enemyImg = imageCache.get(cell.name());
+                    if (iv.getImage() != enemyImg) {
+                        iv.setImage(enemyImg);
+                        iv.setStyle("-fx-effect: dropshadow(three-pass-box, " + enemy.getGlowColor() + ", 10, 0.8, 0, 0);");
                     }
                 } else {
-                    switch (elemento) {
-                        case "Eroe" -> {
-                            iv.setImage(imageCache.get("Eroe"));
-                            // RIPRISTINATO IL TUO GLOW EROE ORIGINALE
-                            iv.setStyle("-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0);");
-                        }
-                        case "Casa" -> {
-                            iv.setImage(imageCache.get("Casa"));
-                            iv.setStyle(""); // Nessun glow per la casa
-                        }
-                    }
+                    iv.setImage(null);
+                    iv.setStyle("");
                 }
             }
         }

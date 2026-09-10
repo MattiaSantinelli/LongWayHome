@@ -37,7 +37,7 @@ public class WelcomeView {
         BorderPane mainLayout = new BorderPane();
 
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/WelcomeView_background.png")));
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
                     bgImage,
                     BackgroundRepeat.NO_REPEAT,

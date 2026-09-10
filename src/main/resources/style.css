@@ -1,3 +1,11 @@
+/**
+    QUESTO FILE CSS RAGGRUPPA CODICE GRAFICO PRESENTE NELLE SEGUENTI VIEW:
+    - EndView;
+    - WinView;
+    - WelcomeView;
+    - LeaderboardView
+ */
+
 /* Bottoni Primari (Arancioni) */
 .primary-button {
     -fx-background-color: linear-gradient(to bottom, #E64A19, #BF360C);

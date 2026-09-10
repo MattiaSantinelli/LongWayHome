@@ -1,7 +1,8 @@
 package it.unicam.cs.mpgc.rpg130324.view;
 
-import it.unicam.cs.mpgc.rpg130324.model.entity.Hero;
 import it.unicam.cs.mpgc.rpg130324.model.entity.Enemy;
+import it.unicam.cs.mpgc.rpg130324.model.entity.EnemyType;
+import it.unicam.cs.mpgc.rpg130324.model.entity.Hero;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,12 +22,13 @@ import java.util.Objects;
 public class CombatView {
 
     private final Stage stage;
-    private final Image imgHero;
-    private final Image imgEnemy;
+    private Image imgHero;
+    private Image imgEnemy;
 
-    // Riferimenti ai modelli di gioco
+    // Riferimenti ai modelli di gioco e al tipo di nemico
     private final Hero hero;
     private final Enemy enemy;
+    private final EnemyType enemyType;
 
     // Riferimenti alle Barre HP e Label
     private ProgressBar heroHpBar;
@@ -38,26 +40,39 @@ public class CombatView {
     private Button attackBtn;
     private Button defendBtn;
 
-    public CombatView(Stage stage, Image imgHero, Image imgEnemy, Hero hero, Enemy enemy) {
+    public CombatView(Stage stage, Hero hero, Enemy enemy, EnemyType enemyType) {
         this.stage = stage;
-        this.imgHero = imgHero;
-        this.imgEnemy = imgEnemy;
         this.hero = hero;
         this.enemy = enemy;
+        this.enemyType = enemyType;
+
+        loadResources();
         initializeInterface();
     }
 
     /**
-     * Inizializza la struttura del layout JavaFX (sfondo, etichette, barre HP e bottoni).
+     * Carica le immagini necessarie in modo incapsulato all'interno della View.
      */
-    private void initializeInterface(){
+    private void loadResources() {
+        try {
+            this.imgHero = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/imgEroe.png")));
+            this.imgEnemy = new Image(Objects.requireNonNull(getClass().getResourceAsStream(enemyType.getImagePath())));
+        } catch (Exception ignored) {
+            // Se il caricamento fallisce, l'interfaccia gestisce le immagini come null
+        }
+    }
+
+    /**
+     * Inizializza la struttura del layout JavaFX.
+     */
+    private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Scontro con " + enemy.getName() + "!");
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(15, 30, 15, 30));
 
         // Sfondo di gioco
         try {
-            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
+            Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
                     bgImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                     BackgroundPosition.CENTER,
@@ -72,7 +87,7 @@ public class CombatView {
         labelTitle.setFont(Font.font("Georgia", FontWeight.BOLD, 32));
         labelTitle.setTextFill(Color.web("#FF5722"));
         labelTitle.setStyle("-fx-effect: dropshadow(three-pass-box, #2B0B00, 10, 0.5, 0, 0);");
-        // Posizione titolo
+
         BorderPane.setMargin(labelTitle, new Insets(20, 0, 0, 0));
         BorderPane.setAlignment(labelTitle, Pos.CENTER);
         root.setTop(labelTitle);
@@ -115,9 +130,6 @@ public class CombatView {
         stage.setScene(scene);
     }
 
-    /**
-     * Crea il VBox contenente l'immagine, il nome e la barra HP dell'eroe.
-     */
     private VBox createHeroBox() {
         VBox box = new VBox(8);
         box.setAlignment(Pos.CENTER);
@@ -152,15 +164,12 @@ public class CombatView {
         return box;
     }
 
-    /**
-     * Crea il VBox contenente l'immagine, il nome e la barra HP del nemico.
-     */
     private VBox createEnemyBox() {
         VBox box = new VBox(8);
         box.setAlignment(Pos.CENTER);
 
-        // Identifica il colore dell'effetto visivo in base al tipo di nemico
-        String glowColor = getEnemyColor(enemy.getName());
+        // Recuperiamo il colore direttamente dall'enum EnemyType (Principio OCP)
+        String glowColor = enemyType.getGlowColor();
 
         ImageView sprite = new ImageView(imgEnemy);
         sprite.setFitWidth(220);
@@ -192,23 +201,6 @@ public class CombatView {
         return box;
     }
 
-    /**
-     * Ritorna il codice colore esadecimale per lo styling in base al tipo di nemico.
-     */
-    private String getEnemyColor(String enemiesName) {
-        return switch (enemiesName) {
-            case "Goblin" -> "#8BC34A";
-            case "Gigante" -> "#FFC107";
-            case "Strega" -> "#880E4F";
-            case "Mago" -> "#1E88E5";
-            case "Drago" -> "#B71C1C";
-            default -> "#FFFFFF";
-        };
-    }
-
-    /**
-     * Crea il bottone con stile personalizzato e effetto hover.
-     */
     private Button createButton(String text, String glowColor, String hoverColor) {
         Button btn = new Button(text);
         btn.setFont(Font.font("Georgia", FontWeight.BOLD, 18));
@@ -230,9 +222,6 @@ public class CombatView {
         return btn;
     }
 
-    /**
-     * Metodo di aggiornamento dell'interfaccia.
-     */
     public void updateUI() {
         heroHpBar.setProgress((double) hero.getCurrentHp() / hero.getMaxHp());
         heroHpLabel.setText(hero.getCurrentHp() + " / " + hero.getMaxHp() + " HP");
@@ -241,17 +230,10 @@ public class CombatView {
         enemyHpLabel.setText(enemy.getCurrentHp() + " / " + enemy.getMaxHp() + " HP");
     }
 
-    // METODI PER IL CONTROLLER
-    /**
-     * Permette al Controller di definire la logica di attacco nel combattimento del gioco.
-     */
     public void setOnAttackListener(Runnable action) {
         this.attackBtn.setOnAction(e -> action.run());
     }
 
-    /**
-     * Permette al Controller di definire la logica di difesa nel combattimento del gioco.
-     */
     public void setOnDefendListener(Runnable action) {
         defendBtn.setOnAction(e -> action.run());
     }

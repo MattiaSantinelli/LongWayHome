@@ -4,13 +4,11 @@ import it.unicam.cs.mpgc.rpg130324.model.entity.Enemy;
 import it.unicam.cs.mpgc.rpg130324.model.entity.EnemyType;
 import it.unicam.cs.mpgc.rpg130324.model.entity.Hero;
 import it.unicam.cs.mpgc.rpg130324.view.CombatView;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.Objects;
 
 public class CombatController {
 
@@ -33,19 +31,8 @@ public class CombatController {
     }
 
     public void startCombat(Runnable onVictory, Runnable onGameOver) {
-        // Carica le due immagini richieste dal costruttore di CombatView
-        Image imgHero = null;
-        Image imgEnemy = null;
-
-        try {
-            imgHero = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png")));
-            imgEnemy = new Image(Objects.requireNonNull(getClass().getResourceAsStream(enemyType.getImagePath())));
-        } catch (Exception ignored) {
-            // Se le risorse falliscono, l'interfaccia gestirà l'assenza dello sprite senza crashare
-        }
-
-        // Invocazione corretta del costruttore con i 5 parametri previsti
-        CombatView combatView = new CombatView(stage, imgHero, imgEnemy, hero, enemy);
+        // Passiamo direttamente i modelli e l'enum del nemico alla View
+        CombatView combatView = new CombatView(stage, hero, enemy, enemyType);
 
         combatView.setOnAttackListener(() -> {
             enemy.takeDamage(hero.getAttackPower());

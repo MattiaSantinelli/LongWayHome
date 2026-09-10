@@ -1,11 +1,11 @@
 package it.unicam.cs.mpgc.rpg130324.model.entity;
 
 public enum EnemyType {
-    GOBLIN("Goblin", 50, 10, "/imgGoblin.png", "#8BC34A", 1.0, 9),
-    GIGANTE("Gigante", 120, 20, "/imgGigante.png", "#FFC107", 1.0, 9),
-    STREGA("Strega", 80, 30, "/imgStrega.png", "#880E4F", 1.0, 7),
-    MAGO("Mago", 80, 30, "/imgMago.png", "#1E88E5", 1.0, 7),
-    DRAGO("Drago", 200, 40, "/imgDrago.png", "#B71C1C", 0.5, 0);
+    GOBLIN("Goblin", 50, 10, "/image/imgGoblin.png", "#8BC34A", 1.0, 9),
+    GIGANTE("Gigante", 120, 20, "/image/imgGigante.png", "#FFC107", 1.0, 9),
+    STREGA("Strega", 80, 30, "/image/imgStrega.png", "#880E4F", 1.0, 7),
+    MAGO("Mago", 80, 30, "/image/imgMago.png", "#1E88E5", 1.0, 7),
+    DRAGO("Drago", 200, 40, "/image/imgDrago.png", "#B71C1C", 0.5, 0);
 
     private final String name;
     private final int baseHp;
