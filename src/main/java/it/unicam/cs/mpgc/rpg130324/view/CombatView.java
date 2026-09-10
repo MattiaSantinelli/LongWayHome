@@ -162,7 +162,7 @@ public class CombatView {
 
     private VBox createEnemyBox() {
         VBox box = new VBox(8);
-        box.setAlignment(Pos.CENTER);
+        box.setAlignment(Pos.CENTER); // Mantiene il blocco ben centrato verticalmente nella schermata
 
         String glowColor = enemyType.getGlowColor();
 
@@ -171,6 +171,13 @@ public class CombatView {
         sprite.setFitHeight(220);
         sprite.setPreserveRatio(true);
         sprite.setStyle("-fx-effect: dropshadow(three-pass-box, " + glowColor + ", 22, 0.7, 0, 0);");
+
+        // Contenitore a dimensione fissa per garantire l'allineamento dei testi sottostanti
+        StackPane imageContainer = new StackPane(sprite);
+        imageContainer.setPrefSize(220, 220);
+        imageContainer.setMinSize(220, 220);
+        imageContainer.setMaxSize(220, 220);
+        imageContainer.setAlignment(Pos.CENTER); // Centra l'immagine all'interno del riquadro fisso
 
         Label labelName = new Label(enemy.getName());
         labelName.setFont(Font.font("Georgia", FontWeight.BOLD, 20));
@@ -192,7 +199,8 @@ public class CombatView {
         enemyHpLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
         enemyHpLabel.setTextFill(Color.WHITE);
 
-        box.getChildren().addAll(sprite, labelName, enemyHpBar, enemyHpLabel);
+        // Aggiungiamo imageContainer al posto di sprite
+        box.getChildren().addAll(imageContainer, labelName, enemyHpBar, enemyHpLabel);
         return box;
     }
 
