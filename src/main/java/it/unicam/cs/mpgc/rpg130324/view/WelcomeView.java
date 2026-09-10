@@ -111,7 +111,17 @@ public class WelcomeView {
             Alert infoHelp = new Alert(Alert.AlertType.INFORMATION);
             infoHelp.setTitle("Aiuto");
             infoHelp.setHeaderText("Guida di gioco");
-            infoHelp.setContentText("Raggiungi la casa in fondo al percorso per vincere la partida!");
+            infoHelp.setContentText(
+                    "\uD83C\uDFAE MOVIMENTO\n" + " - All'interno del gioco è possibile muoversi attraverso l'uso delle frecce direzionali o i tasti WASD.\n\n" +
+                    "⚔ COMBATTIMENTO\n" + " - Bottone ATTACCA: Attraverso questo bottone l'eroe infligge i danni al nemico.\n " +
+                            " - Bottone DIFENDI: Attraverso questo bottone l'eroe si difende dai danni che i nemici infliggono ogni 0.5/1 secondo di gioco.\n\n" +
+                    "\uD83C\uDFAF OBIETTIVO\n" + " - Il gioco termina quando l'Eroe riesce a raggiungere la Casa! Buona fortuna!"
+            );
+            // Permette alla finestra Alert di ridimensionarsi automaticamente in base al contenuto
+            infoHelp.setResizable(true);
+            infoHelp.getDialogPane().setPrefWidth(500);
+            infoHelp.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+
             infoHelp.showAndWait();
         });
         bar.getChildren().addAll(leaderboardButton, btnHelp);
@@ -121,15 +131,33 @@ public class WelcomeView {
     private void setupTopBarButton(Button btn) {
         btn.setFont(Font.font("Georgia", FontWeight.BOLD, 13));
         btn.setPrefHeight(35);
-        btn.setStyle(
-                "-fx-background-color: rgba(20, 10, 5, 0.65); " +
+
+        // Stile base (stato normale)
+        String baseStyle =
+                "-fx-background-color: rgba(20, 10, 5, 0.75); " +
                         "-fx-border-color: #BF360C; " +
-                        "-fx-border-width: 1px; " +
+                        "-fx-border-width: 1.5px; " +
                         "-fx-border-radius: 6px; " +
                         "-fx-background-radius: 6px; " +
                         "-fx-text-fill: #FFB74D; " +
-                        "-fx-cursor: hand;"
-        );
+                        "-fx-cursor: hand;";
+
+        // Stile al passaggio del mouse (hover con glow e schiarimento testo)
+        String hoverStyle =
+                "-fx-background-color: rgba(50, 15, 5, 0.90); " +
+                        "-fx-border-color: #FF5722; " +
+                        "-fx-border-width: 1.5px; " +
+                        "-fx-border-radius: 6px; " +
+                        "-fx-background-radius: 6px; " +
+                        "-fx-text-fill: #FFE0B2; " +
+                        "-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0); " +
+                        "-fx-cursor: hand;";
+
+        btn.setStyle(baseStyle);
+
+        // Gestione dinamica dell'effetto Hover
+        btn.setOnMouseEntered(e -> btn.setStyle(hoverStyle));
+        btn.setOnMouseExited(e -> btn.setStyle(baseStyle));
     }
 
     public void setOnLeaderboardListener(Runnable callback) {
