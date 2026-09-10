@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg130324.model.entity;
 
 public enum EnemyType {
+    // Definizione tipologie nemici
     GOBLIN("Goblin", 50, 10, "/image/imgGoblin.png", "#8BC34A", 1.0, 9),
     GIGANTE("Gigante", 120, 20, "/image/imgGigante.png", "#FFC107", 1.0, 9),
     STREGA("Strega", 80, 30, "/image/imgStrega.png", "#880E4F", 1.0, 7),
@@ -10,8 +11,11 @@ public enum EnemyType {
     private final String name;
     private final int baseHp;
     private final int baseAttack;
+
     private final String imagePath;
     private final String glowColor;
+
+    // Parametri temporali per i Controller e la mappa
     private final double attackIntervalSeconds;
     private final int spawnWeight;
 
@@ -32,22 +36,6 @@ public enum EnemyType {
         return new Enemy(this.name, getBaseHp(), getBaseAttack());
     }
 
-    // --- GETTER D'ISTANZA (senza parametri) ---
-    public String getName() { return name; }
-
-    public int getBaseHp() { return baseHp; }
-
-    public int getBaseAttack() { return baseAttack; }
-
-    public String getImagePath() { return imagePath; }
-
-    public String getGlowColor() { return glowColor; }
-
-    public double getAttackIntervalSeconds() { return attackIntervalSeconds; }
-
-    public int getSpawnWeight(){ return spawnWeight; }
-
-    // --- METODO STATICO PER LA RICERCA ---
     /**
      * Cerca l'istanza dell'enum a partire dal nome testuale del nemico.
      */
@@ -61,4 +49,13 @@ public enum EnemyType {
         }
         return null;
     }
+
+    // Metodi getter
+    public String getName() { return name; }
+    public int getBaseHp() { return baseHp; }
+    public int getBaseAttack() { return baseAttack; }
+    public String getImagePath() { return imagePath; }
+    public String getGlowColor() { return glowColor; }
+    public double getAttackIntervalSeconds() { return attackIntervalSeconds; }
+    public int getSpawnWeight(){ return spawnWeight; }
 }

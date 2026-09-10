@@ -25,18 +25,15 @@ public class CombatView {
     private Image imgHero;
     private Image imgEnemy;
 
-    // Riferimenti ai modelli di gioco e al tipo di nemico
     private final Hero hero;
     private final Enemy enemy;
     private final EnemyType enemyType;
 
-    // Riferimenti alle Barre HP e Label
     private ProgressBar heroHpBar;
     private Label heroHpLabel;
     private ProgressBar enemyHpBar;
     private Label enemyHpLabel;
 
-    // Bottoni per il Controller
     private Button attackBtn;
     private Button defendBtn;
 
@@ -45,7 +42,6 @@ public class CombatView {
         this.hero = hero;
         this.enemy = enemy;
         this.enemyType = enemyType;
-
         loadResources();
         initializeInterface();
     }
@@ -63,7 +59,7 @@ public class CombatView {
     }
 
     /**
-     * Inizializza la struttura del layout JavaFX.
+     * Inizializza la struttura del layout JavaFX (sfondo, etichette, barre HP e bottoni).
      */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Scontro con " + enemy.getName() + "!");
@@ -168,7 +164,6 @@ public class CombatView {
         VBox box = new VBox(8);
         box.setAlignment(Pos.CENTER);
 
-        // Recuperiamo il colore direttamente dall'enum EnemyType (Principio OCP)
         String glowColor = enemyType.getGlowColor();
 
         ImageView sprite = new ImageView(imgEnemy);
@@ -222,6 +217,9 @@ public class CombatView {
         return btn;
     }
 
+    /**
+     * Aggiorna le barre HP.
+     */
     public void updateUI() {
         heroHpBar.setProgress((double) hero.getCurrentHp() / hero.getMaxHp());
         heroHpLabel.setText(hero.getCurrentHp() + " / " + hero.getMaxHp() + " HP");

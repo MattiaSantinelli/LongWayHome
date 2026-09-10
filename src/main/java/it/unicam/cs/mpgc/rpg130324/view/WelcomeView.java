@@ -16,9 +16,6 @@ import javafx.stage.Stage;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-/**
- * Schermata iniziale JavaFX e inserimento nome del giocatore.
- */
 public class WelcomeView {
 
     private final Stage stage;
@@ -31,11 +28,15 @@ public class WelcomeView {
         initializeInterface();
     }
 
+    /**
+     * Inizializza la struttura del layout JavaFx (sfondo, top bar, etichette, bottoni)
+     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Benvenuto");
 
         BorderPane mainLayout = new BorderPane();
 
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
@@ -49,22 +50,25 @@ public class WelcomeView {
         } catch (Exception e) {
             mainLayout.setStyle("-fx-background: linear-gradient(to bottom, #2B0B00, #120300);");
         }
-
+        // Bottoni top bar
         HBox topBar = createButtonBar();
         mainLayout.setTop(topBar);
 
         VBox root = new VBox(25);
         root.setAlignment(Pos.CENTER);
 
+        // Titolo gioco
         Label labelTitle = new Label("LONG WAY HOME");
         labelTitle.setFont(Font.font("Georgia", FontWeight.BOLD, 52));
         labelTitle.setTextFill(Color.web("#FFC107"));
         labelTitle.setStyle("-fx-effect: dropshadow(three-pass-box, #D32F2F, 15, 0.5, 0, 0);");
 
+        // Istruzioni
         Label instructionLabel = new Label("Inserisci il tuo nome per iniziare l'avventura");
         instructionLabel.setFont(Font.font("Georgia", FontWeight.NORMAL, 18));
         instructionLabel.setTextFill(Color.web("#FFB74D"));
 
+        // Campo di testo
         nameField = new TextField();
         nameField.setMaxWidth(320);
         nameField.setPrefHeight(45);
@@ -79,6 +83,7 @@ public class WelcomeView {
                         "-fx-background-radius: 5px;"
         );
 
+        // Bottone INIZIA
         startButton = new Button("INIZIA");
         startButton.setPrefSize(180, 50);
         startButton.getStyleClass().add("primary-button");

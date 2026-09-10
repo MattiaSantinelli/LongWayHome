@@ -29,6 +29,7 @@ public class GameController {
     private long gameTime;
     private int defeatedEnemies = 0;
 
+    // Controller secondario per i sotto-eventi di combattimento
     private CombatController activeCombatController;
 
     public GameController(Stage stage) {
@@ -39,6 +40,7 @@ public class GameController {
     public void startGame() {
         WelcomeView welcomeView = new WelcomeView(stage);
 
+        // Azione per visualizzare la classifica
         welcomeView.setOnLeaderboardListener(() -> {
             Scene initialScene = stage.getScene();
             List<SaveData> savedGames = SaveManager.loadAllSaves();
@@ -46,6 +48,7 @@ public class GameController {
             stage.setScene(leaderboardViewView.getScene());
         });
 
+        // Azione per avvio effettivo della partita
         welcomeView.setOnStartListener(name -> {
             this.playerName = name;
             this.hero = new Hero(playerName);
@@ -53,10 +56,12 @@ public class GameController {
             startEnemyBuffTimer();
             showGameMap();
         });
-
         welcomeView.show();
     }
 
+    /**
+     * Metodo che avvia il timer per poter contare i secondi che passano di modo da potenziare i nemici
+     */
     private void startEnemyBuffTimer() {
         if (enemyBuffTimer != null) {
             enemyBuffTimer.stop();
@@ -67,6 +72,9 @@ public class GameController {
         enemyBuffTimer.play();
     }
 
+    /**
+     * Metodo che tiene conto della durata della partita (in secondi)
+     */
     private long getElapsedTimeSeconds() {
         return (System.currentTimeMillis() - gameTime) / 1000;
     }
@@ -78,27 +86,28 @@ public class GameController {
         gameView.show();
     }
 
+    /**
+     * Gestisce la logica di movimento dell'Eroe delegandone la validazione e lo spostamento al Model (GameMap)
+     */
     private void handleMovement(String direction, GameView gameView) {
-        // La logica di verifica e spostamento è ora incapsulata in GameMap (Model)
         CellType destination = gameMap.moveHero(direction);
-
         if (destination == null) {
             return; // Movimento non valido/muro
         }
-
         gameView.enemyPosition(gameMap.getGrid());
-
         if (destination == CellType.HOUSE) {
             handleVictory();
             return;
         }
-
         EnemyType enemyType = EnemyType.fromName(destination.name());
         if (enemyType != null) {
             startCombatSequence(enemyType);
         }
     }
 
+    /**
+     * Metodo che crea il Controller dedicato per la fase di combattimento e registra i callback di vittoria o sconfitta
+     */
     private void startCombatSequence(EnemyType enemyType) {
         activeCombatController = new CombatController(stage, hero, enemyType, enemyBuffLevel);
         activeCombatController.startCombat(
@@ -107,6 +116,9 @@ public class GameController {
         );
     }
 
+    /**
+     * Metodo che tiene conto i nemici sconfitti dall'Eroe per poterlo potenziare dopo 3 nemici sconfitti
+     */
     private void handleCombatVictory() {
         defeatedEnemies++;
         if (defeatedEnemies % 3 == 0) {

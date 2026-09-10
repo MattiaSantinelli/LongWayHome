@@ -13,9 +13,6 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
-/**
- * Schermata mostrata quando l'Eroe raggiunge con successo la Casa.
- */
 public class WinView {
 
     private final Stage stage;
@@ -34,12 +31,16 @@ public class WinView {
         initializeInterface();
     }
 
+    /**
+     * Inizializza la struttura del layout JavaFx (sfondo, titolo, banner, etichette).
+     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Vittoria!");
-
+        // Contenitore di sfondo
         StackPane rootPane = new StackPane();
         rootPane.setAlignment(Pos.CENTER_LEFT);
 
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/WinView_background.png")));
             rootPane.setBackground(new Background(new BackgroundImage(
@@ -53,6 +54,7 @@ public class WinView {
             rootPane.setStyle("-fx-background-color: #120300;");
         }
 
+        // Banner principale
         VBox bannerBox = new VBox(20);
         bannerBox.setAlignment(Pos.CENTER);
         bannerBox.setMaxWidth(320);
@@ -69,6 +71,7 @@ public class WinView {
         subtitleLabel.setFont(Font.font("Georgia", 14));
         subtitleLabel.setTextFill(Color.web("#E0E0E0"));
 
+        // Tabella statistica
         GridPane statsGrid = new GridPane();
         statsGrid.setHgap(40);
         statsGrid.setVgap(15);
@@ -100,6 +103,7 @@ public class WinView {
         statsGrid.add(lblEnemyTitle, 0, 1);
         statsGrid.add(lblEnemyVal, 1, 1);
 
+        // Bottoni GIOCA ANCORA - FINE
         playAgainBtn = new Button("GIOCA ANCORA");
         playAgainBtn.getStyleClass().add("btn-success");
         playAgainBtn.setPrefWidth(220);

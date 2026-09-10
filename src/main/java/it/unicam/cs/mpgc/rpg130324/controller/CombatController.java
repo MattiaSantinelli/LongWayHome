@@ -16,6 +16,8 @@ public class CombatController {
     private final Hero hero;
     private final Enemy enemy;
     private final EnemyType enemyType;
+
+    // Gestione dell'attacco temporizzato del nemico e stato difensivo Eroe
     private Timeline enemyAttackTimer;
     private boolean isDefending = false;
 
@@ -25,6 +27,7 @@ public class CombatController {
         this.enemyType = enemyType;
         this.enemy = enemyType.createEnemy();
 
+        // Applicazione potenziamenti progressivi
         if (enemyBuffLevel > 0) {
             enemy.applyBuffed(enemyBuffLevel * 15, enemyBuffLevel * 10);
         }
@@ -34,6 +37,7 @@ public class CombatController {
         // Passiamo direttamente i modelli e l'enum del nemico alla View
         CombatView combatView = new CombatView(stage, hero, enemy, enemyType);
 
+        // Azione ATTACCO
         combatView.setOnAttackListener(() -> {
             enemy.takeDamage(hero.getAttackPower());
             combatView.updateUI();
@@ -44,8 +48,10 @@ public class CombatController {
             }
         });
 
+        // Azione DIFESA
         combatView.setOnDefendListener(() -> isDefending = true);
 
+        // Azione attacco automatico nemico
         enemyAttackTimer = new Timeline(new KeyFrame(Duration.seconds(enemyType.getAttackIntervalSeconds()), e -> {
             if (enemy.getCurrentHp() > 0 && hero.getCurrentHp() > 0) {
                 if (isDefending) {

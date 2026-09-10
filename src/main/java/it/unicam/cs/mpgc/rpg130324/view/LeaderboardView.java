@@ -26,7 +26,11 @@ public class LeaderboardView {
         initializeInterface(dataList, backAction);
     }
 
+    /**
+     * Inizializza la struttura del layout JavaFx (sfondo, titolo, lista, scroll pane, bottone).
+     */
     private void initializeInterface(List<SaveData> list, Runnable backAction) {
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/WelcomeView_background.png")));
             BackgroundImage backgroundImage = new BackgroundImage(
@@ -42,11 +46,13 @@ public class LeaderboardView {
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-padding: 30px;");
 
+        // Titolo schermata
         Label titleLabel = new Label("🏆 CLASSIFICA GIOCATORI");
         titleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 42));
         titleLabel.setTextFill(Color.web("#FFC107"));
         titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, #D32F2F, 15, 0.5, 0, 0);");
 
+        // Contenitore lista salvataggi
         VBox contentList = new VBox(12);
         contentList.setAlignment(Pos.TOP_CENTER);
         contentList.setStyle("-fx-padding: 10px;");
@@ -78,12 +84,14 @@ public class LeaderboardView {
             }
         }
 
+        // Scroll pane per la lista
         ScrollPane scrollPane = new ScrollPane(contentList);
         scrollPane.setFitToWidth(true);
         scrollPane.setMaxWidth(650);
         scrollPane.setMaxHeight(340);
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-padding: 0;");
 
+        // CSS scrollbar
         String cssScrollbar =
                 ".scroll-bar:vertical { -fx-background-color: rgba(20, 10, 5, 0.5); -fx-pref-width: 10px; -fx-background-radius: 5px; } " +
                         ".scroll-bar:vertical .thumb { -fx-background-color: #E65100; -fx-background-radius: 5px; } " +
@@ -94,6 +102,7 @@ public class LeaderboardView {
 
         mainLayout.getStylesheets().add("data:text/css," + cssScrollbar.replaceAll("\n", ""));
 
+        // Bottone INDIETRO
         backBtn.setPrefSize(160, 45);
         backBtn.getStyleClass().add("primary-button");
         backBtn.setOnAction(e -> backAction.run());

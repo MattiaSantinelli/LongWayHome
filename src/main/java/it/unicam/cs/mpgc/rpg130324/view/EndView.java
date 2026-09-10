@@ -13,9 +13,6 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
-/**
- * Schermata mostrata quando l'Eroe viene sconfitto in combattimento.
- */
 public class EndView {
 
     private final Stage stage;
@@ -34,12 +31,16 @@ public class EndView {
         initializeInterface();
     }
 
+    /**
+     * Inizializza la struttura del layout JavaFx (sfondo, etichette, bottoni).
+     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Game Over");
 
         VBox root = new VBox(25);
         root.setAlignment(Pos.CENTER);
 
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
@@ -54,15 +55,18 @@ public class EndView {
         }
         root.setStyle(root.getStyle() + " -fx-padding: 30px;");
 
+        // Titolo GAME OVER
         Label titleLabel = new Label("GAME OVER");
         titleLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 48));
         titleLabel.setTextFill(Color.web("#D32F2F"));
         titleLabel.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
 
+        // Nome giocatore
         Label playerLabel = new Label("Sei stato sconfitto, " + namePlayer + "!");
         playerLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
         playerLabel.setTextFill(Color.web("#FFB74D"));
 
+        // Riquadro con le statistiche
         VBox statsBox = new VBox(10);
         statsBox.setAlignment(Pos.CENTER);
         statsBox.setMaxWidth(400);
@@ -82,6 +86,7 @@ public class EndView {
 
         statsBox.getChildren().addAll(timeLabel, enemyLabel);
 
+        // Bottoni
         playAgainBtn = new Button("GIOCA ANCORA");
         playAgainBtn.getStyleClass().add("btn-success");
         playAgainBtn.setPrefWidth(190);

@@ -33,9 +33,8 @@ public class GameView {
     // Matrice delle celle della griglia
     private final StackPane[][] gridCells = new StackPane[ROW][COLUMN];
 
-    // Cache per riutilizzare gli stessi nodi ImageView (elimina il lag al 100%)
+    // Cache per riutilizzare gli stessi nodi ImageView
     private final ImageView[][] cellImageViews = new ImageView[ROW][COLUMN];
-
     // Cache per le risorse grafiche
     private final Map<String, Image> imageCache = new HashMap<>();
 
@@ -54,6 +53,7 @@ public class GameView {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
 
+        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/image/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
@@ -68,10 +68,12 @@ public class GameView {
         }
         root.setStyle(root.getStyle() + " -fx-padding: 20px;");
 
+        // Etichette con istruzioni da gioco
         Label infoLabel = new Label("Usa le Frecce Direzionali o WASD per muoverti");
         infoLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
         infoLabel.setTextFill(Color.web("#FFB74D"));
 
+        // Griglia scacchiera
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(3);
@@ -79,7 +81,7 @@ public class GameView {
         gridPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         gridPane.setStyle("-fx-background-color: rgba(43, 11, 0, 0.6); -fx-padding: 10px; -fx-border-color: #E65100; -fx-border-width: 2px; -fx-border-radius: 5px;");
 
-        // Creazione fissa della struttura visuale (eseguita UNA SOLA VOLTA all'avvio)
+        // Creazione fissa della struttura visuale
         for (int r = 0; r < ROW; r++) {
             for (int c = 0; c < COLUMN; c++) {
                 StackPane cell = new StackPane();
@@ -91,7 +93,7 @@ public class GameView {
                     cell.setStyle("-fx-background-color: rgba(10, 10, 10, 0.55); -fx-border-color: rgba(230, 81, 0, 0.3);");
                 }
 
-                // Inseriamo un'ImageView permanente per ogni cella
+                // Inserimento ImageView permanente per ogni cella
                 ImageView iv = new ImageView();
                 iv.setFitWidth(40);
                 iv.setFitHeight(40);
@@ -104,7 +106,6 @@ public class GameView {
                 gridPane.add(cell, c, r);
             }
         }
-
         root.getChildren().addAll(infoLabel, gridPane);
 
         Scene scene = new Scene(root, 800, 650);
@@ -128,9 +129,12 @@ public class GameView {
         }
     }
 
+    /**
+     * Gestisce la pressione dei tasti convertendo gli input (frecce o WASD) nelle
+     * direzioni standardizzate e notificando il Controller
+     */
     private void handleKeyPress(KeyEvent event) {
         if (onMovimentoListener == null) return;
-
         switch (event.getCode()) {
             case UP, W -> onMovimentoListener.accept("SU");
             case DOWN, S -> onMovimentoListener.accept("GIU");
@@ -141,7 +145,7 @@ public class GameView {
     }
 
     /**
-     * Ridisegna la mappa in modo ultra-fluido riutilizzando le immagini in memoria e applicando i glow.
+     * Ridisegna la mappa riutilizzando le immagini in memoria e applicando i glow.
      */
     public void enemyPosition(CellType[][] grid) {
         for (int r = 0; r < ROW; r++) {
@@ -149,7 +153,7 @@ public class GameView {
                 CellType cell = grid[r][c];
                 ImageView iv = cellImageViews[r][c];
 
-                // 1. Cella vuota
+                // Cella vuota
                 if (cell == null || cell == CellType.EMPTY) {
                     if (iv.getImage() != null) {
                         iv.setImage(null);
@@ -158,7 +162,7 @@ public class GameView {
                     continue;
                 }
 
-                // 2. Gestione dell'Eroe e della Casa (con glow azzurro e dorato)
+                // Gestione dell'Eroe e della Casa
                 if (cell == CellType.HERO) {
                     Image heroImg = imageCache.get("HERO");
                     if (iv.getImage() != heroImg) {
@@ -177,7 +181,7 @@ public class GameView {
                     continue;
                 }
 
-                // 3. Gestione dei Nemici tramite l'enum EnemyType
+                // Gestione dei Nemici tramite l'enum EnemyType
                 EnemyType enemy = EnemyType.fromName(cell.name());
 
                 if (enemy != null) {
