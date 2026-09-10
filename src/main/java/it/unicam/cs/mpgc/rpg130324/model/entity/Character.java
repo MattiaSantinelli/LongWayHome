@@ -24,7 +24,7 @@ public abstract class Character {
     /**
      * Metodo per il potenziamento dei punti vita/danno dei personaggi.
      */
-    public void isBuffed(int hpBoost, int attackBoost){
+    public void applyBuffed(int hpBoost, int attackBoost){
         this.maxHp += hpBoost;
         this.currentHp += hpBoost;
         this.attackPower += attackBoost;

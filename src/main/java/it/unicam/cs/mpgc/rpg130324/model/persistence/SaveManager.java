@@ -24,10 +24,6 @@ public class SaveManager {
 
     /**
      * Salva i dati della partita corrente aggiungendoli a quelli esistenti.
-     *
-     * @param namePlayer il nome inserito dall'utente
-     * @param gameTime il tempo giocato in secondi
-     * @param defeatedEnemies il numero totale di nemici sconfitti
      */
     public static void salvaPartita(String namePlayer, long gameTime, int defeatedEnemies) {
         // Carica i salvataggi già esistenti per non sovrascriverli
@@ -58,8 +54,6 @@ public class SaveManager {
 
     /**
      * Carica tutti i salvataggi presenti nel file JSON.
-     *
-     * @return una List di DatiSalvataggio, oppure una lista vuota se il file non esiste o è vuoto.
      */
     public static List<SaveData> loadAllSaves() {
         File file = new File(SAVE_FILE_PATH);

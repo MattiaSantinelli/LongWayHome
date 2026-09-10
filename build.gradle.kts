@@ -29,7 +29,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("it.unicam.cs.mpgc.rpg130324.App")
+    mainClass.set("it.unicam.cs.mpgc.rpg130324.Launcher")
 }
 
 tasks.test {

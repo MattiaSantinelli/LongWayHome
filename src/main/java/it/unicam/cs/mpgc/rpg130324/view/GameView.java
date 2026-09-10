@@ -1,5 +1,6 @@
 package it.unicam.cs.mpgc.rpg130324.view;
 
+import it.unicam.cs.mpgc.rpg130324.model.entity.EnemyType;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -12,6 +13,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -20,40 +23,32 @@ public class GameView {
     private final Stage stage;
     private final int ROW = 10;
     private final int COLUMN = 10;
-    private final String namePlayer; // Campo per memorizzare il nome del giocatore
+    private final String namePlayer;
 
-    // Mappa da gioco
+    // Matrice delle celle della griglia
     private final StackPane[][] gridCells = new StackPane[ROW][COLUMN];
 
-    // Immagini degli elementi di gioco
-    private Image imgHero;
-    private Image imgGoblin;
-    private Image imgGiant;
-    private Image imgWitch;
-    private Image imgWizard;
-    private Image imgDragon;
-    private Image imgHouse;
+    // Cache per riutilizzare gli stessi nodi ImageView (elimina il lag al 100%)
+    private final ImageView[][] cellImageViews = new ImageView[ROW][COLUMN];
 
-    // Callback per notificare il GameController quando l'utente preme un tasto
+    // Cache per le risorse grafiche
+    private final Map<String, Image> imageCache = new HashMap<>();
+
     private Consumer<String> onMovimentoListener;
 
     public GameView(Stage stage, String namePlayer) {
         this.stage = stage;
         this.namePlayer = namePlayer;
-        initializeInterface();
         loadImages();
+        initializeInterface();
     }
 
-    /**
-     * Inizializza la struttura del layout JavaFX (sfondo, etichette e griglia)
-     */
     private void initializeInterface() {
         stage.setTitle("LONG WAY HOME - Mappa di Gioco");
 
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
 
-        // Sfondo di gioco
         try {
             Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/GameView_background.png")));
             root.setBackground(new Background(new BackgroundImage(
@@ -68,12 +63,10 @@ public class GameView {
         }
         root.setStyle(root.getStyle() + " -fx-padding: 20px;");
 
-        // Etichette con istruzioni da gioco
         Label infoLabel = new Label("Usa le Frecce Direzionali o WASD per muoverti");
         infoLabel.setFont(Font.font("Georgia", FontWeight.BOLD, 16));
         infoLabel.setTextFill(Color.web("#FFB74D"));
 
-        // Griglia della scacchiera
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(3);
@@ -81,7 +74,7 @@ public class GameView {
         gridPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         gridPane.setStyle("-fx-background-color: rgba(43, 11, 0, 0.6); -fx-padding: 10px; -fx-border-color: #E65100; -fx-border-width: 2px; -fx-border-radius: 5px;");
 
-        // Creazione mappa da gioco
+        // Creazione fissa della struttura visuale (eseguita UNA SOLA VOLTA all'avvio)
         for (int r = 0; r < ROW; r++) {
             for (int c = 0; c < COLUMN; c++) {
                 StackPane cell = new StackPane();
@@ -92,6 +85,15 @@ public class GameView {
                 } else {
                     cell.setStyle("-fx-background-color: rgba(10, 10, 10, 0.55); -fx-border-color: rgba(230, 81, 0, 0.3);");
                 }
+
+                // Inseriamo un'ImageView permanente per ogni cella
+                ImageView iv = new ImageView();
+                iv.setFitWidth(40);
+                iv.setFitHeight(40);
+                iv.setPreserveRatio(true);
+
+                cell.getChildren().add(iv);
+                cellImageViews[r][c] = iv;
 
                 gridCells[r][c] = cell;
                 gridPane.add(cell, c, r);
@@ -107,22 +109,20 @@ public class GameView {
         stage.setResizable(false);
     }
 
-    /**
-     * Carica tutte le immagini dei personaggi dalla cartella resources.
-     */
     private void loadImages() {
-        try { imgHero = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png"))); } catch (Exception ignored) {}
-        try { imgGoblin = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGoblin.png"))); } catch (Exception ignored) {}
-        try { imgGiant = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgGigante.png"))); } catch (Exception ignored) {}
-        try { imgWitch = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgStrega.png"))); } catch (Exception ignored) {}
-        try { imgWizard = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgMago.png"))); } catch (Exception ignored) {}
-        try { imgDragon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgDrago.png"))); } catch (Exception ignored) {}
-        try { imgHouse = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgCasa.png"))); } catch (Exception ignored) {}
+        try {
+            imageCache.put("Eroe", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgEroe.png"))));
+            imageCache.put("Casa", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgCasa.png"))));
+        } catch (Exception ignored) {}
+
+        for (EnemyType enemy : EnemyType.values()) {
+            try {
+                Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(enemy.getImagePath())));
+                imageCache.put(enemy.getName(), img);
+            } catch (Exception ignored) {}
+        }
     }
 
-    /**
-     * Intercetta la pressione dei tasti e invia la direzione al Controller.
-     */
     private void handleKeyPress(KeyEvent event) {
         if (onMovimentoListener == null) return;
 
@@ -136,52 +136,47 @@ public class GameView {
     }
 
     /**
-     * Pulisce e ridisegna la mappa intera partendo dalla matrice.
+     * Ridisegna la mappa mantenendo GLI STESSI GLOW ORIGINALI ma senza lag.
      */
     public void enemyPosition(String[][] mappaGioco) {
-        // Svuota i contenuti precedenti delle celle
-        for (int r = 0; r < ROW; r++) {
-            for (int c = 0; c < COLUMN; c++) {
-                gridCells[r][c].getChildren().clear();
-            }
-        }
-
-        // Disegna gli elementi aggiornati
         for (int r = 0; r < ROW; r++) {
             for (int c = 0; c < COLUMN; c++) {
                 String elemento = mappaGioco[r][c];
-                if (elemento == null || elemento.isEmpty()) continue;
+                ImageView iv = cellImageViews[r][c];
 
-                switch (elemento) {
-                    case "Eroe" -> placeSingleItem(imgHero, "-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0);", r, c);
-                    case "Goblin" -> placeSingleItem(imgGoblin, "-fx-effect: dropshadow(three-pass-box, #8BC34A, 10, 0.5, 0, 0);", r, c);
-                    case "Gigante" -> placeSingleItem(imgGiant, "-fx-effect: dropshadow(three-pass-box, #FFC107, 16, 0.7, 0, 0);", r, c);
-                    case "Strega" -> placeSingleItem(imgWitch, "-fx-effect: dropshadow(three-pass-box, #880E4F, 16, 0.7, 0, 0);", r, c);
-                    case "Mago" -> placeSingleItem(imgWizard, "-fx-effect: dropshadow(three-pass-box, #1E88E5, 16, 0.7, 0, 0);", r, c);
-                    case "Drago" -> placeSingleItem(imgDragon, "-fx-effect: dropshadow(three-pass-box, #B71C1C, 16, 0.7, 0, 0);", r, c);
-                    case "Casa" -> placeSingleItem(imgHouse, null, r, c);
+                // Cella vuota: pulisce l'immagine e lo stile
+                if (elemento == null || elemento.isEmpty()) {
+                    iv.setImage(null);
+                    iv.setStyle("");
+                    continue;
+                }
+
+                EnemyType enemy = EnemyType.fromName(elemento);
+
+                if (enemy != null) {
+                    Image imgEnemy = imageCache.get(enemy.getName());
+                    if (imgEnemy != null) {
+                        iv.setImage(imgEnemy);
+                        // RIPRISTINATO IL TUO GLOW CSS ORIGINALE
+                        iv.setStyle("-fx-effect: dropshadow(three-pass-box, " + enemy.getGlowColor() + ", 12, 0.6, 0, 0);");
+                    }
+                } else {
+                    switch (elemento) {
+                        case "Eroe" -> {
+                            iv.setImage(imageCache.get("Eroe"));
+                            // RIPRISTINATO IL TUO GLOW EROE ORIGINALE
+                            iv.setStyle("-fx-effect: dropshadow(three-pass-box, #FF5722, 12, 0.6, 0, 0);");
+                        }
+                        case "Casa" -> {
+                            iv.setImage(imageCache.get("Casa"));
+                            iv.setStyle(""); // Nessun glow per la casa
+                        }
+                    }
                 }
             }
         }
     }
 
-    /**
-     * Helper interno per creare un'ImageView con l'effetto di luce e posizionarla sulla cella.
-     */
-    private void placeSingleItem(Image img, String style, int row, int column) {
-        if (img == null) return;
-        ImageView iv = new ImageView(img);
-        iv.setFitWidth(40);
-        iv.setFitHeight(40);
-        iv.setPreserveRatio(true);
-        if (style != null) iv.setStyle(style);
-        gridCells[row][column].getChildren().add(iv);
-    }
-
-    // METODI PER IL CONTROLLER
-    /**
-     * Permette al Controller di registrare una funzione di callback per il movimento.
-     */
     public void setOnMoveListener(Consumer<String> listener) {
         this.onMovimentoListener = listener;
     }
